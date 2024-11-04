@@ -20,8 +20,11 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestDataGenerator", "TestDataGenerator\TestDataGenerator.csproj", "{C7F45B75-0B4C-4EDE-811F-C3E46043EAED}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQL", "SQL", "{2D50A8C4-F24A-49AA-9972-C83F3B66DE69}"
+	ProjectSection(SolutionItems) = preProject
+		001-initialDatabase.sql = 001-initialDatabase.sql
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccessExtensions", "DataAccessExtensions\DataAccessExtensions.csproj", "{05143B44-CA70-4B09-8881-A1FC24EB2700}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccessExtensions", "DataAccessExtensions\DataAccessExtensions.csproj", "{05143B44-CA70-4B09-8881-A1FC24EB2700}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
