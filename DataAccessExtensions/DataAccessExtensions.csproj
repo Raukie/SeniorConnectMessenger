@@ -10,8 +10,4 @@
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\DataAccessExtensions\DataAccessExtensions.csproj" />
-  </ItemGroup>
-
 </Project>
