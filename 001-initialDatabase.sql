@@ -7,8 +7,8 @@ CREATE TABLE [Users] (
   [ID] int IDENTITY(1, 1),
   [Username] nvarchar(50) NOT NULL,
   [Password] nvarchar(255) NOT NULL,
-  [CreatedAt] datetime2 NOT NULL DEFAULT 'SYSDATETIME()',
-  [UpdatedAt] datetime2,
+  [CreatedAt] datetime NOT NULL DEFAULT GETDATE(),
+  [UpdatedAt] datetime,
   PRIMARY KEY ([ID])
 )
 GO
@@ -170,7 +170,7 @@ GO
 CREATE TABLE [UserChats] (
   [ID] int IDENTITY(1, 1),
   [UserID] int NOT NULL,
-  [LastReadMessageID] int NOT NULL,
+  [LastReadMessageID] int NULL,
   [ChatID] int,
   [IsAdmin] bit NOT NULL,
   PRIMARY KEY ([ID])
@@ -182,7 +182,7 @@ CREATE TABLE [Messages] (
   [ChatID] int NOT NULL,
   [Content] nvarchar(255) NOT NULL,
   [UserID] int,
-  [SendAt] datetime NOT NULL,
+  [SendAt] datetime NOT NULL  DEFAULT GETDATE(),
   PRIMARY KEY ([ID])
 )
 GO
@@ -190,7 +190,7 @@ GO
 CREATE TABLE [GroupChats] (
   [ID] int IDENTITY(1, 1),
   [MemberID] int NOT NULL,
-  [LastReadMessageID] int NOT NULL,
+  [LastReadMessageID] int NULL,
   [ChatID] int NOT NULL,
   [IsAdmin] bit NOT NULL,
   PRIMARY KEY ([ID])
