@@ -1,3 +1,5 @@
+using Infrastructure.DataAccessLayer;
+
 namespace SeniorConnectMessengerWeb
 {
 	public class Program
@@ -8,6 +10,8 @@ namespace SeniorConnectMessengerWeb
 
 			// Add services to the container.
 			builder.Services.AddControllersWithViews();
+			builder.Services.AddScoped<ChatRepository>(repo => new ChatRepository(builder.Configuration.GetConnectionString("SeniorConnectContext")));
+			builder.Services.AddScoped<UserRepository>(repo => new UserRepository(builder.Configuration.GetConnectionString("SeniorConnectContext")));
 
 			var app = builder.Build();
 
@@ -21,6 +25,7 @@ namespace SeniorConnectMessengerWeb
 
 			app.UseHttpsRedirection();
 			app.UseStaticFiles();
+
 
 			app.UseRouting();
 

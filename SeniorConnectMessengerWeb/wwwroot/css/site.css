@@ -11,6 +11,8 @@
     --LapislazuliDarker: #102e3d;
     --LapislazuliLighter: #215c7c;
     --Emerald: #45cb85;
+    --EmeraldDarker: #2d9f63;
+    --EmeraldLighter: #8edfb5;
     --Orangeweb: #faa916;
     --Carmine: #96031a;
     --VioletJTC: #59344f;
@@ -18,6 +20,8 @@
     --PrimaryLighter: var(--LapislazuliLighter);
     --PrimaryDarker: var(--LapislazuliDarker);
     --Secondary: var(--Emerald);
+    --SecondaryLighter: var(--EmeraldLighter);
+    --SecondaryDarker: var(--EmeraldDarker);
     --Teriary: var(--Orangeweb);
 }
 
@@ -255,6 +259,36 @@ input.ChatInput:focus {
 }
 /*#endregion*/
 
+/*#region ChatMessages*/
+#ChatContent {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+}
+
+.SenderChatMessage {
+    align-self: flex-end;
+    width: fit-content;
+    max-width: 70%;
+    background-color: var(--SecondaryDarker);
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.ReceiverChatMessage {
+    width: fit-content;
+    max-width: 70%;
+    background-color: var(--PrimaryDarker);
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+
+
+/*#endregion*/
 /*#region Custom scrollbar styling */
 ::-webkit-scrollbar {
     width: 8px;
