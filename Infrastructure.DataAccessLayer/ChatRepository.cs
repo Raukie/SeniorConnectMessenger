@@ -1,4 +1,6 @@
 ﻿using DataAccessExtensions.Extensions;
+using DataAccessLayer.DTO;
+using DataAccessLayer.Extensions;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
@@ -10,14 +12,6 @@ namespace Infrastructure.DataAccessLayer
     /// </summary>
     public class ChatRepository(string connectionString) : Repository(connectionString)
     {
-        public GetAllChats()
-        {
-            using(var transaction = CreateTransaction())
-            {
-                var command = transaction.CreateCommand("SELECT * ");
-            }
-            return new();
-        }
 
         public ChatDTO CreateChat(ChatDTO chatDto, UserDTO userCreatedBy)
         {

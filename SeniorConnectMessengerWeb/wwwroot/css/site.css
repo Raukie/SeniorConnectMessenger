@@ -1,0 +1,321 @@
+﻿/* Resetting basic styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+:root {
+    --Lapislazuli: #1f5673;
+    --LapislazuliDarker: #102e3d;
+    --LapislazuliLighter: #215c7c;
+    --Emerald: #45cb85;
+    --EmeraldDarker: #2d9f63;
+    --EmeraldLighter: #8edfb5;
+    --Orangeweb: #faa916;
+    --Carmine: #96031a;
+    --VioletJTC: #59344f;
+    --Primary: var(--Lapislazuli);
+    --PrimaryLighter: var(--LapislazuliLighter);
+    --PrimaryDarker: var(--LapislazuliDarker);
+    --Secondary: var(--Emerald);
+    --SecondaryLighter: var(--EmeraldLighter);
+    --SecondaryDarker: var(--EmeraldDarker);
+    --Teriary: var(--Orangeweb);
+}
+
+body, html {
+    height: 100%;
+    width: 100%;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    display: flex;
+    background-color: #EDEDED;
+}
+
+/*#region Main components*/
+.MainContainer {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+}
+
+.MainContainerBar {
+    background-color: var(--PrimaryDarker);
+    width: 65px;
+    padding: 4px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.AppContainer {
+    width: calc(100% - 65px);
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+}
+
+#MainChatNavigation {
+    background-color: var(--Primary);
+    width: 26%;
+    border-width:0px;
+    border-color: var(--PrimaryDarker);
+    border-right-width: 4px;
+    border-style: solid;
+    overflow-y: scroll;
+}
+
+#SharedContainer {
+    width: 74%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+}
+
+#ChatContainer {
+    height: 100%;
+    background-color: var(--Primary);
+    transition: all 0.3s ease-in-out;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+#SecondaryContainer {
+    background-color: var(--Primary);
+    width: 50%;
+    height: 100%;
+    border-width: 0px;
+    border-color: var(--PrimaryDarker);
+    border-left-width: 4px;
+    border-style: solid;
+}
+
+
+/*#endregion*/
+
+/*#region MainBar Styling*/
+.material-symbols-outlined {
+    font-size: 30px!important;
+    color:white;
+}
+
+.ButtonsBelowContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap:20px;
+    justify-content: center;
+}
+
+.Icon {
+    transition: all 0.2s ease-in-out;
+    height: 42px;
+    width: 42px;
+    padding: 6px;
+    border-radius: 100px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.Icon:hover {
+    background-color: var(--LapislazuliLighter);
+}
+
+.IconActive  {
+    font-variation-settings: "'FILL' 1";
+    background-color: var(--LapislazuliLighter);
+}
+
+.IconActive > span {
+    font-variation-settings: "'FILL' 1" !important;
+}
+
+
+
+/*#endregion*/
+
+/*#region ChatArea*/
+
+.ChatHeaderBar {
+    width: 100%;
+    height: 70px;
+    background-color: var(--PrimaryDarker);
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    font-size: 26px;
+    color: white;
+}
+
+#ChatContent {
+    width: 100%;
+    height: calc(100% - 70px - 70px);
+}
+
+.ChatInputBar {
+    width: 100%;
+    height: 100px;
+    padding: 20px;
+    background-color: var(--PrimaryDarker);
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+input.ChatInput {
+    width: calc(100% - 60px);
+    padding: 10px 15px;
+    font-size: 16px;
+    color: #333;
+    background-color: #f0f0f0;
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    outline: none;
+    height: 100%;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+input.ChatInput:focus {
+    border-color: var(--Secondary);
+    box-shadow: 0px 3px 8px rgba(0, 128, 0, 0.3);
+}
+
+#ChatSendButton {
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    font-size: 40px;
+    cursor: pointer;
+    user-select: none;
+}
+
+/*#endregion*/
+
+/*#region ChatList*/
+.ChatOuterContainer {
+    display:flex;
+    flex-direction:column;
+    border: 0px var(--Primary) solid;
+    border-bottom-width: 4px;
+    transition: all 0.2s ease-in-out;
+    color: black;
+    font-weight: 500;
+}
+
+.ChatOuterContainer:hover {
+    filter: brightness(95%);
+
+}
+
+.ChatInnerContainer {
+    padding: 18px;
+    width: 100%;
+    height: 90px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--PrimaryLighter);
+}
+
+
+.Chat:hover {
+    width: 100%;
+    transition: all ease-in-out 0.2s
+}
+
+.ChatNameContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.ChatName {
+    font-size: 20px;
+    color: whitesmoke;
+}
+
+.GreenDot {
+    width: 20px;
+    height: 20px;
+    background-color: var(--Secondary);
+    border-radius: 100px;
+    color: white;
+    align-content: center;
+    font-size: 16px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.LastChatMessage {
+    font-size: 14px;
+}
+/*#endregion*/
+
+/*#region ChatMessages*/
+#ChatContent {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+}
+
+.SenderChatMessage {
+    align-self: flex-end;
+    width: fit-content;
+    max-width: 70%;
+    background-color: var(--SecondaryDarker);
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.ReceiverChatMessage {
+    width: fit-content;
+    max-width: 70%;
+    background-color: var(--PrimaryDarker);
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+/*#endregion*/
+/*#region Custom scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: var(--LapislazuliLighter);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--Secondary);
+    border-radius: 10px;
+    border: 2px solid var(--LapislazuliLighter);
+    filter: brightness(80%);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    filter: brightness(0.9); 
+}
+
+::-webkit-scrollbar-thumb:active {
+    filter: brightness(0.8);
+}
+
+/*#endregion*/
