@@ -11,7 +11,7 @@ namespace DataAccessExtensions.Extensions
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
             repository.OpenConnection();
-            _sqlTransaction = repository.CreateSqlTransaction(new Guid().ToString());
+            _sqlTransaction = repository.CreateSqlTransaction();
         }
 
         public SqlCommand CreateCommand(string commandText)
@@ -26,6 +26,7 @@ namespace DataAccessExtensions.Extensions
                 throw new ArgumentNullException(nameof(_repository)); // #TODO Is this the correct exception type?
             } 
             _sqlTransaction.Commit();
+            _repository.CloseConnection();
             foreach (var command in _commands)
             {
                 command.Dispose();
