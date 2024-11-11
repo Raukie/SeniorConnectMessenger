@@ -20,17 +20,22 @@ namespace DataAccessExtensions.Extensions
 
         public SqlCommand CreateCommand(string commandText)
         {
-            return _sqlConnection.CreateCommand();
+            var command = _sqlConnection.CreateCommand();
+            command.CommandText = commandText;
+            return command;
         }
 
         public SqlCommand CreateCommand(string commandText, SqlTransaction transaction)
         {
-            return _sqlConnection.CreateCommand();
+            var command = _sqlConnection.CreateCommand();
+            command.Transaction = transaction;
+            command.CommandText = commandText;
+            return command;
         }
 
-        public SqlTransaction CreateSqlTransaction(string name)
+        public SqlTransaction CreateSqlTransaction()
         {
-            return _sqlConnection.BeginTransaction(name);
+            return _sqlConnection.BeginTransaction();
         }
 
         public void OpenConnection()
@@ -41,6 +46,23 @@ namespace DataAccessExtensions.Extensions
         public void CloseConnection()
         {
             _sqlConnection.Close();
+        }
+        /// <summary>
+        /// Only use for testing purposes!
+        /// </summary>
+        public void ClearDatabase()
+        {
+            using(var transaction = CreateTransaction())
+            {
+                var command = transaction.CreateCommand(@"
+                        EXEC sp_MSForEachTable 'ALTER TABLE ? NOCHECK CONSTRAINT ALL';
+
+                        EXEC sp_MSForEachTable 'DELETE FROM ?';
+
+                        EXEC sp_MSForEachTable 'ALTER TABLE ? WITH CHECK CHECK CONSTRAINT ALL';
+                ");
+                command.ExecuteNonQuery();
+            }
         }
 
         private void Dispose()
