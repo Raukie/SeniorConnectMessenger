@@ -46,10 +46,11 @@ namespace DataAccessLayer
                 {
                     members = faker.Random.ListItems(members, 2);
                     name = members[0].FirstName + "&" + members[1].FirstName;
-                    IsGroupChat = true;
+                    IsGroupChat = false;
                 } else
                 {
                     name = faker.Commerce.ProductName();
+                    IsGroupChat = true;
                 }
 
                 yield return _chatRepository.CreateChat(new ChatDTO(name, members.ToList()) { IsGroupChat = IsGroupChat }, owner);

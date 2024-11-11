@@ -1,8 +1,11 @@
-﻿@*
+﻿@using SeniorConnectMessengerWeb.Helpers
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
 }
+
+@inject UserService userService
 
 <div  id="ChatListInnerContainer">
     <div class="ChatOuterContainer">
@@ -205,3 +208,8 @@
         </div>
     </div>
 </div>
+
+<script src="~/js/ChatList.js"></script>
+<script>
+    const chatList = new ChatList(@userService.GetCurrentUserId(Context), "/");
+</script>
