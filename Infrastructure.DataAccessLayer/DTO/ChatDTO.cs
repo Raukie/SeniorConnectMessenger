@@ -21,7 +21,7 @@ namespace DataAccessLayer.DTO
         public int Id { get; set; }
         public string Name { get; set; }
         public List<UserDTO> Users { get; set; } = new();
-        public List<MessageDTO> Messages { get; set; }
+        public List<MessageDTO> Messages { get; set; } = new();
         public MessageDTO LastReadMessage { get; set; }
         public bool IsGroupChat { get; set; } 
         public string Hash { get; set; }

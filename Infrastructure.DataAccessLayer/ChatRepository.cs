@@ -79,8 +79,8 @@ namespace Infrastructure.DataAccessLayer
                     {
                         chat.Messages.Add(new(reader["Content"].ToString())
                         {
-                           SendAt = (DateTime)reader["SendAt"],
-                           User = chat.Users.FirstOrDefault(user=>user.Id == (int)reader["UserID"]) // more efficient then fetching all users again
+                            SendAt = (DateTime)reader["SendAt"],
+                            User = (reader["UserID"] != DBNull.Value) ? chat.Users.FirstOrDefault(user => user.Id == (int)reader["UserID"]) : null // more efficient then fetching all users again
                         });
                     }
                 }
@@ -121,7 +121,8 @@ namespace Infrastructure.DataAccessLayer
                             Hash = reader["Hash"].ToString(),
                             IsGroupChat = (bool)reader["IsGroupChat"],
                             LastReadMessage = new MessageDTO(reader["UnreadMessageContent"].ToString()),
-                            AmountOfUnreadMessages = (int)reader["UnreadMessageCount"]
+                            AmountOfUnreadMessages = (int)reader["UnreadMessageCount"],
+                            Id = (int)reader["ID"]
                         });
                     }
                 }

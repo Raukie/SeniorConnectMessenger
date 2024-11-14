@@ -292,6 +292,9 @@ input.ChatInput:focus {
     border-radius: 4px;
 }
 
+.MessageSender {
+    font-weight: 700;
+}
 /*#endregion*/
 /*#region Custom scrollbar styling */
 ::-webkit-scrollbar {
