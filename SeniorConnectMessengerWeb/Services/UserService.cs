@@ -7,7 +7,7 @@ namespace SeniorConnectMessengerWeb.Helpers
     {
         public int GetCurrentUserId(HttpContext context)
         {
-            var user = userRepository.GetUserByUsername("LayneErnser28@yahoo.com");
+            var user = userRepository.GetUserByUsername("MiguelOKon_Kautzer@hotmail.com");
             return user?.Id ?? 0;
         }
     }

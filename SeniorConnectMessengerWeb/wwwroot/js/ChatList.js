@@ -64,7 +64,10 @@
         $("#ChatHeaderBar").text(chat.name);
         $("#ChatContent").empty();
         for (let message of chat.messages) {
-            let isYou = message.userId == this.LoggedInUserId;
+            let isYou = false;
+            if (message.user != null) {
+                isYou = message.user.id == this.LoggedInUserId;
+            }
             $("#ChatContent").append(this.RenderMessage(message, isYou));
         }
     }
@@ -78,7 +81,8 @@
     }
 
     RenderMessage(message, isYou) {
-        let cssClass = (isYou) ? "SenderChatMessage" : "RecieverChatMessage";
+        let cssClass = (isYou) ? "SenderChatMessage" : "ReceiverChatMessage";
+        debugger;
         if (message.user == null) {
             return this.RenderSystemMessage(message);
         }
