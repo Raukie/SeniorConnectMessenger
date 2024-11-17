@@ -55,7 +55,7 @@ namespace SeniorConnectMessengerWeb.Controllers
                 if (chatToPoll.IsOpen)
                 {
                     chatUpdate.messages = chat.GetUnreadMessagesInChat(chatRepository, userId);
-                } else if(chat.LastReadMessageId != chatToPoll.LastFetchedMessageId)
+                } else if(chat.GetLastMessage().Id != chatToPoll.LastFetchedMessageId)
                 {
                     chatUpdate.messages.Add(chat.GetLastMessage());
                 }
