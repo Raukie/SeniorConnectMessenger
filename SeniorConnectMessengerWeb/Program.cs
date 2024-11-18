@@ -1,4 +1,5 @@
 using Infrastructure.DataAccessLayer;
+using SeniorConnectMessengerWeb.Helpers;
 
 namespace SeniorConnectMessengerWeb
 {
@@ -12,6 +13,7 @@ namespace SeniorConnectMessengerWeb
 			builder.Services.AddControllersWithViews();
 			builder.Services.AddScoped<ChatRepository>(repo => new ChatRepository(builder.Configuration.GetConnectionString("SeniorConnectContext")));
 			builder.Services.AddScoped<UserRepository>(repo => new UserRepository(builder.Configuration.GetConnectionString("SeniorConnectContext")));
+			builder.Services.AddScoped<UserService>();
 
 			var app = builder.Build();
 

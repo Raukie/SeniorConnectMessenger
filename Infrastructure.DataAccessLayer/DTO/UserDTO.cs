@@ -20,6 +20,12 @@ namespace DataAccessLayer.DTO
             IsAdmin = isAdmin ;
             Id = id;
         }
+
+        public UserDTO()
+        {
+
+        }
+
         public string Username { get; set; }
         public string? Initials { get; set; }
         public string? FirstName { get; set; }

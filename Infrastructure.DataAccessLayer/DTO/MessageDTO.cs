@@ -8,6 +8,7 @@ namespace DataAccessLayer.DTO
 {
     public class MessageDTO(string content, UserDTO? user = null, DateTime? sendAt = null)
     {
+        public int? Id { get; set; }
         public string Content { get; set; } = content;
         public UserDTO? User { get; set; } = user;
         public DateTime SendAt { get; set; } = sendAt ?? DateTime.Now;

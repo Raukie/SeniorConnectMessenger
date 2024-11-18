@@ -12,6 +12,44 @@ namespace Infrastructure.DataAccessLayer
     /// </summary>
     public class UserRepository(string connectionString) : Repository(connectionString)
     {
+        public UserDTO? GetUserByUsername(string userName)
+        {
+            UserDTO? userDto = null;
+
+            using (var transaction = CreateTransaction())
+            {
+                var command = transaction.CreateCommand(@"SELECT U.ID, U.Username, U.Password, 
+            UP.FirstName, UP.LastName, UP.Gender, UP.Street, UP.City, UP.HouseNumber, UP.BirthDate, 
+            UP.SearchRadius, UP.Zipcode, UP.Initials, UP.Country
+            FROM [Users] U
+            INNER JOIN [UserProfile] UP ON U.ID = UP.UserID
+            WHERE U.Username = @Username");
+
+                command.Parameters.AddWithValue("@Username", userName);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        userDto = new UserDTO(reader["Username"].ToString(), (int)reader["ID"])
+                        {
+                            FirstName = reader["FirstName"].ToString(),
+                            LastName = reader["LastName"].ToString(),
+                            Gender = reader["Gender"].ToString(),
+                            Street = reader["Street"].ToString(),
+                            City = reader["City"].ToString(),
+                            HouseNumber = reader["HouseNumber"].ToString(),
+                            BirthDate = (DateTime)reader["BirthDate"],
+                            SearchRadius = (int)reader["SearchRadius"],
+                            Zipcode = reader["Zipcode"].ToString(),
+                            Initials = reader["Initials"].ToString(),
+                            Country = reader["Country"].ToString()
+                        };
+                    }
+                }
+            }
+            return userDto;
+        }
         /// <summary>
         /// Password is hashed here
         /// </summary>
