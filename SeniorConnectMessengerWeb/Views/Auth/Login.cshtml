@@ -1,0 +1,94 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = null;
+}
+
+<html>
+    <head>
+        <title>Login</title>
+    </head>
+    <link href="~/css/Login.css" rel="stylesheet"/>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+<script defer src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script defer src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <body>
+        <div class="LoginModal">
+            <div class="ModalHeader">Inloggen</div>
+        <form method="post" id="LoginForm" onsubmit="LoginUser">
+            <div id="UserNameInput" class="FormInput">
+                <input type="text" name="Username" required placeholder="Email..."/>
+            </div>
+            <div id="PasswordInput" class="FormInput">
+                <input type="password" name="Password" required placeholder="Wachtwoord..." />
+            </div>
+            <div class="FormInput">
+                <div id="LoginButton" class="LoginButton" onclick="SubmitForm">Inloggen</div>
+                <label style="display:none;" id="LoginLabel"></label>
+            </div>
+                <hr />
+            </form>
+            <div class="FormButtonsBottom">
+                <div class="RegisterButton">
+                    Registreren
+                </div>
+                <div class="HelpButton">
+                    Hulp nodig?
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+
+<script>
+    function LoginUser(frm) {
+        let data = $(frm).serializeArray();
+        $.ajax({
+            url: "@Url.Action("AuthenticateUser", "Auth")",
+            method: "POST",
+            success: ProcessResult,
+            data: data
+        });
+    }
+
+    function ProcessResult(result) {
+        if(result.error != null){
+            $("#LoginLabel").text(result.error);
+            $("#LoginLabel").show();
+        }
+    }
+
+    var validator = null;
+
+    $(document).ready(() => {
+        $("#LoginButton").click(SubmitForm);
+        validator = $("#LoginForm").validate({
+            rules: {
+                Username: {
+                    required: true,
+                },
+                Password: {
+                    required: true,
+                }
+            },
+            messages: {
+                Username: {
+                    required: "Vul je email in",
+                },
+                Password: {
+                    required: "Vul je wachtwoord in",
+                }
+            },
+            submitHandler: function (form) {
+                LoginUser(form);
+            }
+        });
+    });
+
+    function SubmitForm() {
+        $("#LoginForm").submit();
+    }
+</script>

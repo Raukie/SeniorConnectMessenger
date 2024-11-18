@@ -1,11 +1,13 @@
 ﻿using DataAccessLayer.DTO;
 using Infrastructure.DataAccessLayer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SeniorConnectMessengerWeb.Helpers;
 using SeniorConnectMessengerWeb.Models.DTO;
 
 namespace SeniorConnectMessengerWeb.Controllers
 {
+    [Authorize]
     public class ChatController(ChatRepository chatRepository, UserService userService, ChatService chatService): Controller
     {
         private ChatRepository _chatRepository = chatRepository ?? throw new ArgumentNullException(nameof(chatRepository));

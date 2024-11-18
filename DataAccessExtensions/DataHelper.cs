@@ -15,7 +15,7 @@ namespace DataAccessExtensions
 
         public static bool Verify(string password, string plainPassword)
         {
-            return BCrypt.Net.BCrypt.Verify(password, plainPassword);
+            return BCrypt.Net.BCrypt.Verify(plainPassword, password);
         }
     }
 }
