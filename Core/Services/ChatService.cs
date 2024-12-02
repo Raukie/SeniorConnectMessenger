@@ -12,7 +12,7 @@ namespace SeniorConnectMessengerWeb.Helpers
         {
             var chats = chatRepository.GetChatsUserIsIn(userId);
 
-            return chats.Select(chat => new Chat(chat.Name, chat.Hash, chat.Id)).ToList();
+            return chats.Select(chat => new Chat(chat.Name, chat.Hash, chat.Id, chat.LastReadMessage)).ToList();
         }
     }
 }

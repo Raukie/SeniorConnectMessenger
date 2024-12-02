@@ -11,7 +11,7 @@ namespace Core.ObjectMapper
     {
         public static Chat ToDomain(this ChatDTO chatDto)
         {
-            return new Chat(chatDto.Name, chatDto.Hash, chatDto.Id);
+            return new Chat(chatDto.Name, chatDto.Hash, chatDto.Id, chatDto.LastReadMessage);
         }
     }
 }

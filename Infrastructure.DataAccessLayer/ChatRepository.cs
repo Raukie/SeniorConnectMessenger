@@ -21,19 +21,20 @@ namespace Infrastructure.DataAccessLayer
         /// <returns></returns>
         public List<MessageDTO> UpdateLastReadMessage(int chatId, int userId)
         {
-            var chat = GetChat(chatId);
+            var chat = GetChat(chatId, userId, false);
             List<MessageDTO> unreadMessages = new();
 
             using (var transaction = CreateTransaction())
             {
                 var command = transaction.CreateCommand(@"
-                    SELECT [LastReadMessageID] FROM [UserChats] WHERE [UserID] = @UserId AND [ChatID] = ChatId
+                    SELECT [LastReadMessageID] FROM [UserChats] WHERE [UserID] = @UserId AND [ChatID] = @ChatId
                 ");
 
-                command.Parameters.AddWithValue("ChatId", chatId);
+                command.Parameters.AddWithValue("@ChatId", chatId);
                 command.Parameters.AddWithValue("@UserId", userId);
 
                 int lastReadMessageID = (int)command.ExecuteScalar();
+
 
                 command = transaction.CreateCommand(@"
                     SELECT [ID], [ChatID], [Content], [UserID], [SendAt]
@@ -62,11 +63,15 @@ namespace Infrastructure.DataAccessLayer
                 }
 
                 command = transaction.CreateCommand(@"UPDATE [UserChats] SET LastReadMessageID = @LastReadMessageId WHERE [ChatID] = @ChatId AND [UserID] = @UserId");
+                command.Parameters.AddWithValue("@LastReadMessageID", lastReadMessageID);
+                command.Parameters.AddWithValue("@ChatId", chatId);
+                command.Parameters.AddWithValue("@UserId", userId);
+                command.ExecuteNonQuery();
             }
             return unreadMessages;
         }
 
-        public ChatDTO GetChat(int chatId)
+        public ChatDTO GetChat(int chatId, int userId, bool updateLastReadMessage = false)
         {
             ChatDTO? chat = null;
             using (var transaction = CreateTransaction())
@@ -119,7 +124,7 @@ namespace Infrastructure.DataAccessLayer
                 }
 
                 command = transaction.CreateCommand(@"
-                    SELECT [ChatID], [Content], [UserID], [SendAt]
+                    SELECT [ChatID], [Content], [UserID], [SendAt], [ID]
                     FROM [Messages]
                     WHERE [ChatID] = @ChatId
                     ORDER BY [SendAt] ASC
@@ -134,9 +139,19 @@ namespace Infrastructure.DataAccessLayer
                         chat.Messages.Add(new(reader["Content"].ToString())
                         {
                             SendAt = (DateTime)reader["SendAt"],
+                            Id = (int)reader["ID"],
                             User = (reader["UserID"] != DBNull.Value) ? chat.Users.FirstOrDefault(user => user.Id == (int)reader["UserID"]) : null // more efficient then fetching all users again
                         });
                     }
+                }
+
+                if (updateLastReadMessage && chat.Messages.Count > 0)
+                {
+                    command = transaction.CreateCommand(@"UPDATE [UserChats] SET LastReadMessageID = @LastReadMessageId WHERE [ChatID] = @ChatId AND [UserID] = @UserId");
+                    command.Parameters.AddWithValue("@LastReadMessageID", chat.Messages.OrderByDescending(c=>c.Id).First().Id);
+                    command.Parameters.AddWithValue("@ChatId", chatId);
+                    command.Parameters.AddWithValue("@UserId", userId);
+                    command.ExecuteNonQuery();
                 }
             }
             return chat;
@@ -152,6 +167,7 @@ namespace Infrastructure.DataAccessLayer
                   ,C.[IsGroupChat]
                   ,C.[Hash]
 	              ,M.ID As LastReadMessageID
+	              ,(SELECT TOP(1) ID FROM [Messages] WHERE C.ID = ChatID ORDER BY [SendAt] ASC ) AS LastFetchedMessageID
 	              ,(SELECT TOP(1) Content FROM [Messages] WHERE C.ID = ChatID ORDER BY [SendAt] ASC ) AS UnreadMessageContent
 	              ,CASE WHEN M.ID IS NOT NULL THEN (SELECT COUNT(*) FROM [Messages] WHERE ID > M.ID AND ChatID = C.ID) ELSE (SELECT COUNT(*) FROM [Messages] WHERE ChatID = C.ID) END AS UnreadMessageCount
 	             FROM [dbo].[Chats] AS C
@@ -174,7 +190,7 @@ namespace Infrastructure.DataAccessLayer
                         {
                             Hash = reader["Hash"].ToString(),
                             IsGroupChat = (bool)reader["IsGroupChat"],
-                            LastReadMessage = new MessageDTO(reader["UnreadMessageContent"].ToString()),
+                            LastReadMessage = new MessageDTO(reader["UnreadMessageContent"].ToString()) { Id = (int)reader["LastFetchedMessageID"] },
                             AmountOfUnreadMessages = (int)reader["UnreadMessageCount"],
                             Id = (int)reader["ID"]
                         });

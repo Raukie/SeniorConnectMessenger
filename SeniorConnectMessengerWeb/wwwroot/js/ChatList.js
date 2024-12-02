@@ -14,6 +14,7 @@
     ChatHeader;
     ChatContent;
     ChatListContainer = $("#ChatListInnerContainer");
+    OpenChat;
 
     InitEvents() {
         const self = this;
@@ -31,7 +32,7 @@
             traditional: true,
             data: { chatId: chatId },
             success: (chat) => {
-                this.Chats.set(chat.id, chat);
+                this.OpenChat = this.Chats.get(chat.id);
                 this.LoadChatContent(chat);
             }
         });
@@ -48,6 +49,24 @@
                     this.ChatListContainer.append(this.RenderChat(chat));
                 }
                 this.InitEvents();
+            }
+        });
+    }
+
+    PollChats() {
+        let chatPolls = [];
+        for (let chatKeyValuePair of chatList.Chats) {
+            let chat = chatKeyValuePair[1];
+            chatPolls.push({ hash: chat.hash, id: chat.id, isOpen: (chat.id == this.OpenChat.id), lastFetchedMessageId: chat.lastReadMessage.id })
+        }
+        $.ajax({
+            url: `${this.RelativeUrl}Chat/PollForUpdates`,
+            method: "POST",
+            data: {
+                chatsToPoll: chatPolls
+            },
+            success: (chats) => {
+                console.log(chats);
             }
         });
     }

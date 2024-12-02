@@ -25,10 +25,10 @@ namespace SeniorConnectMessengerWeb.Controllers
         public IActionResult GetChatContent(int chatId)
         {
             int userId = userService.GetCurrentUserId(HttpContext);
-            var chat = chatRepository.GetChat(chatId);
+            var chat = chatRepository.GetChat(chatId, userId, true);
             return Json(chat);
         }
-
+        [HttpPost()]
         public IActionResult PollForUpdates(List<ChatPollDTO> chatsToPoll)
         {
             int userId = userService.GetCurrentUserId(HttpContext);
@@ -60,7 +60,11 @@ namespace SeniorConnectMessengerWeb.Controllers
                 } else if(chat.GetLastMessage().Id != chatToPoll.LastFetchedMessageId)
                 {
                     chatUpdate.messages.Add(chat.GetLastMessage());
+                } else
+                {
+                    continue;  
                 }
+                chatUpdatesDTO.Add(chatUpdate);
             }
 
             return Json(chatUpdatesDTO);

@@ -6,19 +6,20 @@ namespace Core
 {
     public class Chat
     {
-        public Chat(string name, string hash, int id)
+        public Chat(string name, string hash, int id, MessageDTO lastReadMessage)
         {
             _name = name;
             _hash = hash;
             _id = id;
+            messages.Add(lastReadMessage);
         }
 
         private int _id;
         private string _name;
         private string _hash;
         private List<MessageDTO> messages = new();
-        private int _lastReadMessageId { get; set; }
-        public int LastReadMessageId { get { return _lastReadMessageId; } }
+        private int? _lastReadMessageId { get; set; }
+        public int? LastReadMessageId { get { return _lastReadMessageId; } }
 
         public int Id { get { return _id; } }
         public string Hash { get { return _hash; } }
@@ -26,7 +27,7 @@ namespace Core
 
         public bool ShouldUpdateUI(string hash)
         {
-            return hash == _hash;
+            return hash != _hash;
         }
 
         public MessageDTO GetLastMessage()
