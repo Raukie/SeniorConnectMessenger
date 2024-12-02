@@ -5,10 +5,12 @@
         this.RelativeUrl = relativeUrl;
         this.FetchAllChats();
         this.LoggedInUserId = loggedInUserId;
-        this.ChatHeader;
         this.ChatContent = $("#ChatContent")
+        this.Chats = new Map();
+        this.ChatHeader;
     }
 
+    Chats;
     ChatHeader;
     ChatContent;
     ChatListContainer = $("#ChatListInnerContainer");
@@ -16,18 +18,20 @@
     InitEvents() {
         const self = this;
         $(".ChatOuterContainer").click((s) => {
-            self.FetchChatContent($(s.currentTarget).attr("ChatId"));
+            self.FetchChatContent(
+                $(s.currentTarget).attr("ChatId")
+            );
         });
     }
 
     FetchChatContent(chatId) {
-        debugger;
         $.ajax({
             url: `${this.RelativeUrl}Chat/GetChatContent`,
             method: "GET",
             traditional: true,
             data: { chatId: chatId },
             success: (chat) => {
+                this.Chats.set(chat.id, chat);
                 this.LoadChatContent(chat);
             }
         });
@@ -40,6 +44,7 @@
             success: (chats) => {
                 this.ChatListContainer.empty();
                 for (let chat of chats) {
+                    this.Chats.set(chat.id, chat);
                     this.ChatListContainer.append(this.RenderChat(chat));
                 }
                 this.InitEvents();

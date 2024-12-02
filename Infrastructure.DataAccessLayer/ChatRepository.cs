@@ -123,7 +123,6 @@ namespace Infrastructure.DataAccessLayer
                     FROM [Messages]
                     WHERE [ChatID] = @ChatId
                     ORDER BY [SendAt] ASC
-
                 ");
 
                 command.Parameters.AddWithValue("@ChatId", chatId);
@@ -148,14 +147,14 @@ namespace Infrastructure.DataAccessLayer
             List<ChatDTO> userChats = new();
             using(var transaction = CreateTransaction())
             {
-                var command = transaction.CreateCommand(@"SELECT TOP (1000) C.[ID]
+                var command = transaction.CreateCommand(@"SELECT C.[ID]
                   ,C.[Name]
                   ,C.[IsGroupChat]
                   ,C.[Hash]
 	              ,M.ID As LastReadMessageID
 	              ,(SELECT TOP(1) Content FROM [Messages] WHERE C.ID = ChatID ORDER BY [SendAt] ASC ) AS UnreadMessageContent
 	              ,CASE WHEN M.ID IS NOT NULL THEN (SELECT COUNT(*) FROM [Messages] WHERE ID > M.ID AND ChatID = C.ID) ELSE (SELECT COUNT(*) FROM [Messages] WHERE ChatID = C.ID) END AS UnreadMessageCount
-	             FROM [SeniorConnectPG8].[dbo].[Chats] AS C
+	             FROM [dbo].[Chats] AS C
 	            LEFT JOIN [UserChats] AS UC
 	            ON UC.ChatID = C.ID 
 	            FULL OUTER JOIN [Messages] AS M

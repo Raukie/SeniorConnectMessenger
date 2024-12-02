@@ -1,5 +1,6 @@
 using Infrastructure.DataAccessLayer;
 using SeniorConnectMessengerWeb.Helpers;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace SeniorConnectMessengerWeb
 {
@@ -14,6 +15,13 @@ namespace SeniorConnectMessengerWeb
 			builder.Services.AddScoped<ChatRepository>(repo => new ChatRepository(builder.Configuration.GetConnectionString("SeniorConnectContext")));
 			builder.Services.AddScoped<UserRepository>(repo => new UserRepository(builder.Configuration.GetConnectionString("SeniorConnectContext")));
 			builder.Services.AddScoped<UserService>();
+			builder.Services.AddScoped<ChatService>();
+
+			builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+				.AddCookie(options => 
+				{
+					options.LoginPath = new PathString("/Auth/Login");
+				});
 
 			var app = builder.Build();
 
@@ -27,7 +35,7 @@ namespace SeniorConnectMessengerWeb
 
 			app.UseHttpsRedirection();
 			app.UseStaticFiles();
-
+			app.UseAuthentication();
 
 			app.UseRouting();
 

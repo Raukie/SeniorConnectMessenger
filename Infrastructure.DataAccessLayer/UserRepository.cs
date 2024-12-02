@@ -12,18 +12,32 @@ namespace Infrastructure.DataAccessLayer
     /// </summary>
     public class UserRepository(string connectionString) : Repository(connectionString)
     {
+        public string GetUserPasswordHash(UserDTO user)
+        {
+            using (var transaction = CreateTransaction())
+            {
+                var command = transaction.CreateCommand(@"
+                    SELECT Password FROM [Users] WHERE ID = @UserId
+                ");
+
+                command.Parameters.AddWithValue("@UserId", user.Id);
+
+                return (string)command.ExecuteScalar();
+            }
+        }
+
         public UserDTO? GetUserByUsername(string userName)
         {
             UserDTO? userDto = null;
 
             using (var transaction = CreateTransaction())
             {
-                var command = transaction.CreateCommand(@"SELECT U.ID, U.Username, U.Password, 
-            UP.FirstName, UP.LastName, UP.Gender, UP.Street, UP.City, UP.HouseNumber, UP.BirthDate, 
-            UP.SearchRadius, UP.Zipcode, UP.Initials, UP.Country
-            FROM [Users] U
-            INNER JOIN [UserProfile] UP ON U.ID = UP.UserID
-            WHERE U.Username = @Username");
+                var command = transaction.CreateCommand(@"SELECT U.ID, U.Username, U.Password,
+                UP.FirstName, UP.LastName, UP.Gender, UP.Street, UP.City, UP.HouseNumber, UP.BirthDate, 
+                UP.SearchRadius, UP.Zipcode, UP.Initials, UP.Country
+                FROM [Users] U
+                INNER JOIN [UserProfile] UP ON U.ID = UP.UserID
+                WHERE U.Username = @Username");
 
                 command.Parameters.AddWithValue("@Username", userName);
 

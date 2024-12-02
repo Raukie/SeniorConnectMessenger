@@ -1,5 +1,7 @@
-﻿using DataAccessLayer.DTO;
+﻿using DataAccessExtensions;
+using DataAccessLayer.DTO;
 using Infrastructure.DataAccessLayer;
+using SeniorConnectMessengerWeb.Constants;
 
 namespace SeniorConnectMessengerWeb.Helpers
 {
@@ -7,8 +9,19 @@ namespace SeniorConnectMessengerWeb.Helpers
     {
         public int GetCurrentUserId(HttpContext context)
         {
-            var user = userRepository.GetUserByUsername("MiguelOKon_Kautzer@hotmail.com");
-            return user?.Id ?? 0;
+           return Convert.ToInt32(context.User.FindFirst(claim => claim.Type == AuthenticationConstants.UserIdClaim).Value);
+        }
+
+        public bool AuthenticateUser(string userName, string plainPassword, out UserDTO? user)
+        {
+            user = userRepository.GetUserByUsername(userName);
+            if (user == null)
+            {
+                return false;
+            }
+
+            string passwordHash = userRepository.GetUserPasswordHash(user);
+            return DataHelper.Verify(passwordHash, plainPassword);
         }
     }
 }

@@ -1,11 +1,13 @@
 ﻿using DataAccessLayer.DTO;
 using Infrastructure.DataAccessLayer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SeniorConnectMessengerWeb.Helpers;
 using SeniorConnectMessengerWeb.Models.DTO;
 
 namespace SeniorConnectMessengerWeb.Controllers
 {
+    [Authorize]
     public class ChatController(ChatRepository chatRepository, UserService userService, ChatService chatService): Controller
     {
         private ChatRepository _chatRepository = chatRepository ?? throw new ArgumentNullException(nameof(chatRepository));
@@ -39,7 +41,7 @@ namespace SeniorConnectMessengerWeb.Controllers
                 //chat has been removed
                 if(chat == null)
                 {
-                    chatUpdatesDTO.Add(new ChatUpdateDTO() { Removed = true, Id =chatToPoll.Id });
+                    chatUpdatesDTO.Add(new ChatUpdateDTO() { Removed = true, Id = chatToPoll.Id });
                     continue;
                 }
                 ChatUpdateDTO chatUpdate = new() { Id = chat.Id };
