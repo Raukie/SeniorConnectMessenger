@@ -15,6 +15,7 @@ namespace SeniorConnectMessengerWeb
 			builder.Services.AddScoped<ChatRepository>(repo => new ChatRepository(builder.Configuration.GetConnectionString("SeniorConnectContext")));
 			builder.Services.AddScoped<UserRepository>(repo => new UserRepository(builder.Configuration.GetConnectionString("SeniorConnectContext")));
 			builder.Services.AddScoped<UserService>();
+			builder.Services.AddScoped<ChatService>();
 
 			builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 				.AddCookie(options => 

@@ -9,12 +9,12 @@ namespace SeniorConnectMessengerWeb.Helpers
     {
         public int GetCurrentUserId(HttpContext context)
         {
-           return Convert.ToInt32(context.User.FindFirst(claim=>claim.Type == AuthenticationConstants.UserIdClaim).Value);
+           return Convert.ToInt32(context.User.FindFirst(claim => claim.Type == AuthenticationConstants.UserIdClaim).Value);
         }
 
         public bool AuthenticateUser(string userName, string plainPassword, out UserDTO? user)
         {
-            user = userRepository.GetUserByUsername("MiguelOKon_Kautzer@hotmail.com");
+            user = userRepository.GetUserByUsername(userName);
             if (user == null)
             {
                 return false;

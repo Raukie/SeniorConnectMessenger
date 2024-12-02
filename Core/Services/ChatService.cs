@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace SeniorConnectMessengerWeb.Helpers
 {
-    public class ChatService(ChatRepository chatRepository, UserService userService)
+    public class ChatService(ChatRepository chatRepository)
     {
         private ChatRepository _chatRepository = chatRepository ?? throw new ArgumentNullException(nameof(chatRepository));
         public List<Chat> GetAllChatsUserIsIn(int userId)

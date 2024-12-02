@@ -81,7 +81,22 @@ namespace DataAccessLayer
                     Country = faker.Address.CountryCode()
                 }, "fontys123");
             }
-        }
+
+			yield return _userRepository.CreateUser(new UserDTO("r.evertz@student.fontys.nl", null, null)
+			{
+				FirstName = "Ryan",
+				LastName = "Evertz",
+				Gender = "Male",
+				Street = faker.Address.StreetAddress(),
+				City = faker.Address.City(),
+				HouseNumber = faker.Random.Int(1, 999).ToString(),
+				BirthDate = faker.Date.Past(50, DateTime.Today.AddYears(-60)),
+				SearchRadius = faker.Random.Int(0, 50),
+				Zipcode = faker.Address.ZipCode(),
+				Initials = "R.T.J.S",
+				Country = faker.Address.CountryCode()
+			}, "fontys123");
+		}
 
         public void GenerateRandomMessages(List<ChatDTO> chats, int maxCount)
         {

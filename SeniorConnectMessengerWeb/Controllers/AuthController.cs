@@ -1,6 +1,7 @@
 ﻿using DataAccessLayer.DTO;
 using Infrastructure.DataAccessLayer;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using SeniorConnectMessengerWeb.Constants;
 using SeniorConnectMessengerWeb.Helpers;
@@ -24,7 +25,7 @@ namespace SeniorConnectMessengerWeb.Controllers
         /// </summary>
         /// <param name="loginInformation"></param>
         /// <returns></returns>
-        public IActionResult AuthenticateUser(LoginFormDTO loginInformation)
+        public async Task<IActionResult> AuthenticateUser(LoginFormDTO loginInformation)
         {
             if (!ModelState.IsValid)
             {
@@ -48,10 +49,10 @@ namespace SeniorConnectMessengerWeb.Controllers
             claims.Add(new Claim(ClaimTypes.Name, user.Username));
             claims.Add(new Claim(AuthenticationConstants.FullnameClaim, $"{user.FirstName} {user.LastName}"));
             claims.Add(new Claim(AuthenticationConstants.UserIdClaim, user.Id.ToString()));
-            var identity = new ClaimsIdentity(claims);
-            HttpContext.SignInAsync(new ClaimsPrincipal(identity));
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            await HttpContext.SignInAsync(new ClaimsPrincipal(identity));
 
-            return new RedirectResult(Url.Action("index", "home") ?? "");
+            return Json(new AuthenticationResultDTO() { Success = true });
         }
     }
 }

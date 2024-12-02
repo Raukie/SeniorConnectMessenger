@@ -41,7 +41,7 @@ namespace SeniorConnectMessengerWeb.Controllers
                 //chat has been removed
                 if(chat == null)
                 {
-                    chatUpdatesDTO.Add(new ChatUpdateDTO() { Removed = true, Id =chatToPoll.Id });
+                    chatUpdatesDTO.Add(new ChatUpdateDTO() { Removed = true, Id = chatToPoll.Id });
                     continue;
                 }
                 ChatUpdateDTO chatUpdate = new() { Id = chat.Id };

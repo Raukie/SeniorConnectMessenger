@@ -55,6 +55,9 @@
     }
 
     function ProcessResult(result) {
+        if(result.success == true){
+            window.location.href = "@Url.Action("Index", "Home")"
+        }
         if(result.error != null){
             $("#LoginLabel").text(result.error);
             $("#LoginLabel").show();
