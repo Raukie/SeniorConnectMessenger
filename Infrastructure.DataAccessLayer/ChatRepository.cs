@@ -154,6 +154,9 @@ namespace Infrastructure.DataAccessLayer
                     command.Parameters.AddWithValue("@ChatId", chatId);
                     command.Parameters.AddWithValue("@UserId", userId);
                     command.ExecuteNonQuery();
+
+                    chat.LastReadMessage = chat.Messages.OrderByDescending(chat => chat.Id).First();
+                    chat.AmountOfUnreadMessages = 0;
                 }
             }
             return chat;
@@ -180,7 +183,7 @@ namespace Infrastructure.DataAccessLayer
             using (var transaction = CreateTransaction())
             {
                 var command = transaction.CreateCommand(@"
-                    UPDATE [UserChats] SET [IsAdmin] = true WHERE [UserID] = @UserID AND [ChatID] = @ChatId
+                    UPDATE [UserChats] SET [IsAdmin] = 1 WHERE [UserID] = @UserID AND [ChatID] = @ChatId
                 ");
 
                 command.Parameters.AddWithValue("@ChatId", chatId);
@@ -195,7 +198,7 @@ namespace Infrastructure.DataAccessLayer
             using (var transaction = CreateTransaction())
             {
                 var command = transaction.CreateCommand(@"
-                    REMOVE FROM [UserChats] WHERE [UserID] = @UserID AND [ChatID] = @ChatUd
+                    DELETE FROM [UserChats] WHERE [UserID] = @UserID AND [ChatID] = @ChatId
                 ");
 
                 command.Parameters.AddWithValue("@ChatId", chatId);
@@ -248,7 +251,14 @@ namespace Infrastructure.DataAccessLayer
             return userChats;
         }
 
-        public ChatDTO CreateChat(ChatDTO chatDto, UserDTO userCreatedBy)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="chatDto"></param>
+        /// <param name="userCreatedBy"></param>
+        /// <param name="overrideDate"> Only for the database seeder!!!</param>
+        /// <returns></returns>
+        public ChatDTO CreateChat(ChatDTO chatDto, UserDTO userCreatedBy, DateTime? overrideDate = null)
         {
             using (var transaction = CreateTransaction())
             {
@@ -277,7 +287,7 @@ namespace Infrastructure.DataAccessLayer
                 command.ExecuteNonQuery();
             }
 
-            CreateMessage(chatDto.Id, new MessageDTO($"{userCreatedBy.FirstName} heeft deze chat aangemaakt", null));
+                CreateMessage(chatDto.Id, new MessageDTO($"{userCreatedBy.FirstName} heeft deze chat aangemaakt", null, overrideDate));
             return chatDto;
         }
 
@@ -297,5 +307,35 @@ namespace Infrastructure.DataAccessLayer
                 command.ExecuteNonQuery();
             }
         }
+
+        public bool AddUserToChat(int chatId, UserDTO userToAdd)
+        {
+            using (var transaction = CreateTransaction())
+            {
+                var command = transaction.CreateCommand(@"
+                    INSERT INTO [UserChats] (UserID, LastReadMessageID, ChatID, IsAdmin)
+                    VALUES (@UserID, @LastReadMessageID, @ChatID, @IsAdmin)
+                ");
+                command.Parameters.AddWithValue("@UserID", userToAdd.Id);
+                command.Parameters.AddWithValue("@ChatID", chatId);
+                command.Parameters.AddWithValue("@IsAdmin", false); 
+                command.Parameters.AddWithValue("@LastReadMessageID", DBNull.Value);
+
+                int rowsAffected = command.ExecuteNonQuery();
+                if (rowsAffected <= 0)
+                {
+                    return false; // If no rows were affected, the insert failed
+                }
+
+                var welcomeMessage = new MessageDTO($"{userToAdd.FirstName} {userToAdd.LastName} neemt deel aan de groep")
+                {
+                };
+
+                CreateMessage(chatId, welcomeMessage);
+            }
+
+            return true; // Successfully added the user to the chat
+        }
+
     }
 }

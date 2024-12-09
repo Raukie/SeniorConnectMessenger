@@ -4,7 +4,7 @@ namespace Infrastructure.DataAccessLayer
 {
     public interface IChatStorage
     {
-        ChatDTO CreateChat(ChatDTO chatDto, UserDTO userCreatedBy);
+        ChatDTO CreateChat(ChatDTO chatDto, UserDTO userCreatedBy, DateTime? overrideDate = null);
         void CreateMessage(int chatId, MessageDTO message);
         ChatDTO GetChat(int chatId, int userId, bool updateLastReadMessage = false);
         List<ChatDTO> GetChatsUserIsIn(int userId);

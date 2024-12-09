@@ -6,14 +6,17 @@ namespace Core
 {
     public class Chat
     {
-        public Chat(string name, string hash, int id, MessageDTO lastReadMessage, int unreadMessagesCount)
+        public Chat(string name, string hash, int id, MessageDTO? lastReadMessage, int? unreadMessagesCount)
         {
             _name = name;
             _hash = hash;
             _id = id;
-            messages.Add(lastReadMessage);
-            _unreadMessagesCount = unreadMessagesCount;
-            _lastReadMessageId = lastReadMessage.Id;
+            if(lastReadMessage != null)
+            {
+                _lastReadMessageId = lastReadMessage.Id;
+                messages.Add(lastReadMessage);
+            }
+            _unreadMessagesCount = unreadMessagesCount ?? 0;
 		}
 
         protected int _id;
@@ -47,6 +50,9 @@ namespace Core
             return unreadMessages;
         }
 
-
+        public IReadOnlyCollection<MessageDTO> GetMessages()
+        {
+            return messages;
+        }
     }
 }

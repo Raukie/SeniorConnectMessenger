@@ -18,6 +18,16 @@ namespace core.Helpers
             return chats.Select(chat => new Chat(chat.Name, chat.Hash, chat.Id, chat.LastReadMessage, chat.AmountOfUnreadMessages!.Value)).ToList();
         }
 
+		public List<ChatDTO> GetAllChatsDataUserIsIn(int userId)
+		{
+			return _chatRepository.GetChatsUserIsIn(userId);
+		}
+
+        public ChatDTO GetChatData(int chatId, int userId, bool updateLastReadMessage)
+        {
+            return _chatRepository.GetChat(chatId, userId, updateLastReadMessage);
+        }
+
         public Chat GetChat(int chatId, int userId, bool updateLastReadMessage)
         {
             return _chatRepository.GetChat(chatId, userId, updateLastReadMessage).ToDomain();
@@ -25,7 +35,11 @@ namespace core.Helpers
 
         public GroupChat GetGroupChat(int chatId, int userId)
 		{
+<<<<<<< Updated upstream
 			return (GroupChat)_chatRepository.GetChat(chatId, userId, false).ToDomain();
+=======
+			return _chatRepository.GetChat(chatId, userId, false).ToGroupChatDomain();
+>>>>>>> Stashed changes
 		}
 
         public List<ChatUpdateDTO> FetchChatUpdates(int userId, List<ChatPollDTO> chatsToPoll)

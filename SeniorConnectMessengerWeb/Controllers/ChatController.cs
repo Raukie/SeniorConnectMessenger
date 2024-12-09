@@ -24,7 +24,7 @@ namespace SeniorConnectMessengerWeb.Controllers
         public IResult GetUserChats()
         {
             int userId = _userService.GetCurrentUserId(HttpContext);
-            var chats = chatService.GetAllChatsUserIsIn(userId);
+            var chats = chatService.GetAllChatsDataUserIsIn(userId);
 
             return Results.Ok(chats);
         }
@@ -32,7 +32,7 @@ namespace SeniorConnectMessengerWeb.Controllers
         public IResult GetChatContent(int chatId)
         {
             int userId = _userService.GetCurrentUserId(HttpContext);
-            var chat = _chatService.GetChat(chatId, userId, true);
+            var chat = _chatService.GetChatData(chatId, userId, true);
             return Results.Ok(chat);
         }
         [HttpPost()]

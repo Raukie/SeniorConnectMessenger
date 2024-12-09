@@ -53,7 +53,7 @@ namespace DataAccessLayer
                     IsGroupChat = true;
                 }
 
-                yield return _chatRepository.CreateChat(new ChatDTO(name, members.ToList()) { IsGroupChat = IsGroupChat }, owner);
+                yield return _chatRepository.CreateChat(new ChatDTO(name, members.ToList()) { IsGroupChat = IsGroupChat }, owner, DateTime.Now.AddYears(-3));
             }
         }
 

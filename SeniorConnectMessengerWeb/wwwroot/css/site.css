@@ -447,4 +447,20 @@ input.ChatInput:focus {
 .UserAdminOption {
     color: var(--Secondary);
 }
+
+.UserListHeaderBar {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    height: 60px;
+}
+
+#CloseUserListHeader {
+    font-size: 36px;
+    padding: 20px;
+    user-select: none;
+    cursor: pointer;
+}
 /* endregion */

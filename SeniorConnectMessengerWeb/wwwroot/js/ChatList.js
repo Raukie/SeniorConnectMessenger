@@ -20,13 +20,19 @@
     ChatContent;
     ChatListContainer = $("#ChatListInnerContainer");
     OpenChat;
-    SelectedUser;
+    SelectedUser = { element: null, user: null};
 
     DeleteUser() {
         $("#UserOptionsPopup").hide();
-        if (this.SelectedUser == null) {
+        if (this.SelectedUser.user == null) {
             return;
         }
+        $.ajax({
+            url: `${this.RelativeUrl}Chat/RemoveUserFromChat`,
+            method: "POST",
+            data: { chatId: this.OpenChat.id, userId: this.SelectedUser.user.id }
+        })
+        this.SelectedUser.element.remove();
     }
 
     AdminUser() {
@@ -34,6 +40,13 @@
         if (this.SelectedUser == null) {
             return;
         }
+
+        $.ajax({
+            url: `${this.RelativeUrl}Chat/MakeUserAdmin`,
+            method: "POST",
+            data: { chatId: this.OpenChat.id, userId: this.SelectedUser.user.id }
+        })
+        $(".UserListAdmin", this.SelectedUser.element).show();
     }
 
     InitEvents() {
@@ -44,6 +57,7 @@
             );
         });
         $("#ChatHeaderBar").click(() => { self.OpenChatSettings() });
+        $("#CloseUserListHeader").click(() => { $("#SecondaryContainer").hide() });
     }
 
     OpenChatSettings() {
@@ -117,11 +131,13 @@
                     if (message.user != null) {
                         isYou = message.user.id == this.LoggedInUserId;
                     }
-                    $("#ChatContent").append(this.RenderMessage(message, isYou));
+                    $("#ChatContent").prepend(this.RenderMessage(message, isYou));
                 }
                 const chatItem = $(`[ChatId=${chat.id}]`);
-                if (messages.length > 0)
+                if (chat.messages.length > 0) {
                     chatItem.children(".LastChatMessage").text(chat.messages[messages.length].content);
+                    document.getElementById('ChatContent').scrollTop = 0;
+                }
 
                 this.ChatListContainer.prepend(chatItem);
 
@@ -153,7 +169,8 @@
         $("#UserList").append(userElement);
         if (this.OpenChat.isAdmin) {
             userElement.click(() => {
-                self.SelectedUser = user;
+                self.SelectedUser.user = user;
+                self.SelectedUser.element = userElement;
                 ShowPopup.call(userElement[0])
             });
         }

@@ -3,7 +3,7 @@ using Infrastructure.DataAccessLayer;
 
 namespace Core
 {
-    public class GroupChat(string name, string hash, int id, MessageDTO lastReadMessage, int unreadMessagesCount) : Chat(name, hash, id, lastReadMessage, unreadMessagesCount)
+    public class GroupChat(string name, string hash, int id, MessageDTO? lastReadMessage, int? unreadMessagesCount) : Chat(name, hash, id, lastReadMessage, unreadMessagesCount)
     {
         public bool RemoveUserFromChat(IChatStorage chatRepository, UserDTO user, UserDTO userActor)
         {
@@ -13,7 +13,7 @@ namespace Core
             }
 
             chatRepository.CreateMessage(_id, 
-                new MessageDTO($"{user.FirstName} {user.LastName} was verwijderd door ${user.FirstName} {user.LastName}")
+                new MessageDTO($"{user.FirstName} {user.LastName} was verwijderd door {userActor.FirstName} {userActor.LastName}")
             );
 
             return chatRepository.RemoveUserFromChat(_id, user.Id!.Value);
@@ -25,6 +25,8 @@ namespace Core
             {
                 return false;
             }
+
+            chatRepository.CreateMessage(_id, new MessageDTO($"{user.FirstName} {user.LastName} is nu beheerder"));
 
             return chatRepository.MakeUserAdmin(_id, user.Id!.Value);
         }
