@@ -1,27 +1,27 @@
 ﻿using Core;
+using Core.Models.DTO;
+using Core.ObjectMapper;
 using DataAccessLayer.DTO;
 using Infrastructure.DataAccessLayer;
 using System.Linq;
+using System.Net.Http;
 
-namespace SeniorConnectMessengerWeb.Helpers
+namespace core.Helpers
 {
-    public class ChatService(ChatRepository chatRepository)
+    public class ChatService(IChatStorage chatRepository)
     {
-        private ChatRepository _chatRepository = chatRepository ?? throw new ArgumentNullException(nameof(chatRepository));
+        private IChatStorage _chatRepository = chatRepository ?? throw new ArgumentNullException(nameof(chatRepository));
         public List<Chat> GetAllChatsUserIsIn(int userId)
         {
             var chats = chatRepository.GetChatsUserIsIn(userId);
 
-            return chats.Select(chat => new Chat(chat.Name, chat.Hash, chat.Id)).ToList();
+            return chats.Select(chat => new Chat(chat.Name, chat.Hash, chat.Id, chat.LastReadMessage, chat.AmountOfUnreadMessages!.Value)).ToList();
         }
-<<<<<<< Updated upstream
-    }
-=======
 
         public Chat GetChat(int chatId, int userId, bool updateLastReadMessage)
         {
             return _chatRepository.GetChat(chatId, userId, updateLastReadMessage).ToChatDomain();
-        }
+		}
 
         public GroupChat GetGroupChat(int chatId, int userId)
 		{
@@ -76,5 +76,5 @@ namespace SeniorConnectMessengerWeb.Helpers
 			return chatUpdatesDTO;
 		}
 	}
->>>>>>> Stashed changes
+
 }

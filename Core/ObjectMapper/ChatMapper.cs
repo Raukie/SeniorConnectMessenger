@@ -11,7 +11,7 @@ namespace Core.ObjectMapper
     {
         public static Chat ToChatDomain(this ChatDTO chatDto)
         {
-            return new Chat(chatDto.Name, chatDto.Hash, chatDto.Id);
+            return new Chat(chatDto.Name, chatDto.Hash, chatDto.Id, chatDto.LastReadMessage, chatDto.AmountOfUnreadMessages!.Value);
         }
 
         public static GroupChat ToGroupChatDomain(this ChatDTO chatDto)
