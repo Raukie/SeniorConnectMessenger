@@ -1,6 +1,7 @@
 ﻿using DataAccessLayer.DTO;
 using Infrastructure.DataAccessLayer;
 using Microsoft.Identity.Client;
+using System.Reflection;
 
 namespace Core
 {
@@ -30,6 +31,11 @@ namespace Core
         public int Id { get { return _id; } }
         public string Hash { get { return _hash; } }
         public string Name { get { return _name; } }
+
+        public void SendMessage(IChatStorage chatStorage, UserDTO user, string messageContent) 
+        {
+            chatStorage.CreateMessage(_id, new MessageDTO(messageContent) {User = user});
+        }
 
         public bool ShouldUpdateUI(string hash)
         {
