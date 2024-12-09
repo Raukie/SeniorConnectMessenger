@@ -18,6 +18,10 @@ namespace DataAccessLayer.DTO
         {
             Name = name;
         }
+        public ChatDTO()
+        {
+            // for unit tests
+        }
         public int Id { get; set; }
         public string Name { get; set; }
         public List<UserDTO> Users { get; set; } = new();
