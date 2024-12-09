@@ -20,12 +20,12 @@ namespace core.Helpers
 
         public Chat GetChat(int chatId, int userId, bool updateLastReadMessage)
         {
-            return _chatRepository.GetChat(chatId, userId, updateLastReadMessage).ToDomain();
-        }
+            return _chatRepository.GetChat(chatId, userId, updateLastReadMessage).ToChatDomain();
+		}
 
         public GroupChat GetGroupChat(int chatId, int userId)
 		{
-			return (GroupChat)_chatRepository.GetChat(chatId, userId, false).ToDomain();
+			return (GroupChat)_chatRepository.GetChat(chatId, userId, false).ToGroupChatDomain();
 		}
 
         public List<ChatUpdateDTO> FetchChatUpdates(int userId, List<ChatPollDTO> chatsToPoll)
@@ -76,4 +76,5 @@ namespace core.Helpers
 			return chatUpdatesDTO;
 		}
 	}
+
 }
