@@ -7,7 +7,12 @@
         this.LoggedInUserId = loggedInUserId;
         this.ChatContent = $("#ChatContent")
         this.Chats = new Map();
-        this.ChatHeader;
+        var pollLoop = this.InitPollLoop();
+        const self = this;
+        $(document).ready(() => {
+            $("#DeleteUser").click(() => { self.DeleteUser() })
+            $("#AdminUser").click(() => { self.AdminUser() })
+        })
     }
 
     Chats;
@@ -15,6 +20,21 @@
     ChatContent;
     ChatListContainer = $("#ChatListInnerContainer");
     OpenChat;
+    SelectedUser;
+
+    DeleteUser() {
+        $("#UserOptionsPopup").hide();
+        if (this.SelectedUser == null) {
+            return;
+        }
+    }
+
+    AdminUser() {
+        $("#UserOptionsPopup").hide();
+        if (this.SelectedUser == null) {
+            return;
+        }
+    }
 
     InitEvents() {
         const self = this;
@@ -23,6 +43,15 @@
                 $(s.currentTarget).attr("ChatId")
             );
         });
+        $("#ChatHeaderBar").click(() => { self.OpenChatSettings() });
+    }
+
+    OpenChatSettings() {
+        if (this.OpenChat == null) {
+            return; // don't do anything when header clicked
+        }
+        $("#SecondaryContainer").show();
+
     }
 
     FetchChatContent(chatId) {
@@ -33,6 +62,7 @@
             data: { chatId: chatId },
             success: (chat) => {
                 this.OpenChat = this.Chats.get(chat.id);
+                this.OpenChat.users = chat.users;
                 this.LoadChatContent(chat);
             }
         });
@@ -53,11 +83,19 @@
         });
     }
 
+    InitPollLoop() {
+        return setTimeout(() => {
+            this.PollChats();
+            this.InitPollLoop();
+        },
+        1000)
+    }
+
     PollChats() {
         let chatPolls = [];
         for (let chatKeyValuePair of chatList.Chats) {
             let chat = chatKeyValuePair[1];
-            chatPolls.push({ hash: chat.hash, id: chat.id, isOpen: (chat.id == this.OpenChat.id), lastFetchedMessageId: chat.lastReadMessage.id })
+            chatPolls.push({ hash: chat.hash, id: chat.id, isOpen: (this.OpenChat != null && chat.id == this.OpenChat.id), lastFetchedMessageId: chat.lastReadMessage.id })
         }
         $.ajax({
             url: `${this.RelativeUrl}Chat/PollForUpdates`,
@@ -66,13 +104,64 @@
                 chatsToPoll: chatPolls
             },
             success: (chats) => {
-                console.log(chats);
+                this.ProcessChatUpdateDTOs(chats);
             }
         });
     }
 
+    ProcessChatUpdateDTOs(chats) {
+        for (let chat of chats) {
+            if (this.OpenChat.id != null && chat.id == this.OpenChat.id) {
+                for (let message of chat.messages) {
+                    let isYou = false;
+                    if (message.user != null) {
+                        isYou = message.user.id == this.LoggedInUserId;
+                    }
+                    $("#ChatContent").append(this.RenderMessage(message, isYou));
+                }
+                const chatItem = $(`[ChatId=${chat.id}]`);
+                if (messages.length > 0)
+                    chatItem.children(".LastChatMessage").text(chat.messages[messages.length].content);
+
+                this.ChatListContainer.prepend(chatItem);
+
+            } else if (chat.messages != null && chat.messages.length > 0) {
+                const chatItem = $(`[ChatId=${chat.id}]`);
+                $(".LastChatMessage", chatItem).text(chat.messages[0].content);
+                $(".GreenDot", chatItem).text(chat.amountOfUnreadMessages);
+                $(".GreenDot", chatItem).show();
+                this.ChatListContainer.prepend(chatItem);
+            } else if (chat.removed == true) {
+                $(`[ChatId=${chat.id}]`).remove();
+            }
+        }
+    }
+
+    RenderUser(user) {
+        const self = this;
+        const adminDisplay = user.isAdmin ? "block" : "none";
+        let userElement = $(`<div class="UserListUser" ShowTargetPopupId="UserOptionsPopup"
+                            PopupX="left" PopupY="bottom" />
+                            <div class="UserListInfo">
+                                <div class="UserListName">${user.firstName} ${user.lastName}</div>
+                                <div style="display:${adminDisplay};" class="UserListAdmin">Admin</div>
+                            </div>
+                            <div class="UserListButtons">
+                                <span class="material-symbols-outlined">more_vert</span>
+                            </div>
+                        </div >`);
+        $("#UserList").append(userElement);
+        if (this.OpenChat.isAdmin) {
+            userElement.click(() => {
+                self.SelectedUser = user;
+                ShowPopup.call(userElement[0])
+            });
+        }
+    }
+
     RenderChat(chat) {
-        return ` <div ChatId="${chat.id}" class="ChatOuterContainer">
+        if (chat.amountOfUnreadMessages > 0) {
+            return ` <div ChatId="${chat.id}" class="ChatOuterContainer">
             <div class="ChatInnerContainer">
                 <div class="ChatNameContainer">
                     <div class="ChatName">${chat.name}</div>
@@ -80,9 +169,19 @@
                 </div>
                 <div class="GreenDot">${chat.amountOfUnreadMessages}</div>
             </div>
+        </div>`
+        } else {
+            return ` <div ChatId="${chat.id}" class="ChatOuterContainer">
+            <div class="ChatInnerContainer">
+                <div class="ChatNameContainer">
+                    <div class="ChatName">${chat.name}</div>
+                    <div class="LastChatMessage">${chat.lastReadMessage.content}</div>
+                </div>
+                 <div style="display:none;" class="GreenDot"></div>
+            </div>
         </div>` 
+        }
     }
-
 
     LoadChatContent(chat) {
         $("#ChatHeaderBar").text(chat.name);
@@ -94,6 +193,16 @@
             }
             $("#ChatContent").append(this.RenderMessage(message, isYou));
         }
+
+        this.OpenChat.isAdmin = this.OpenChat.users.some(user => user.id == this.LoggedInUserId && user.isAdmin);
+
+        $("#UserList").empty();
+        for (let user of chat.users) {
+            this.RenderUser(user);
+        }
+
+        let chatItem = $(`[ChatId=${chat.id}]`);
+        $(".GreenDot", chatItem).hide();
     }
 
     RenderSystemMessage(message) {
@@ -106,7 +215,6 @@
 
     RenderMessage(message, isYou) {
         let cssClass = (isYou) ? "SenderChatMessage" : "ReceiverChatMessage";
-        debugger;
         if (message.user == null) {
             return this.RenderSystemMessage(message);
         }

@@ -6,21 +6,24 @@ namespace Core
 {
     public class Chat
     {
-        public Chat(string name, string hash, int id, MessageDTO lastReadMessage)
+        public Chat(string name, string hash, int id, MessageDTO lastReadMessage, int unreadMessagesCount)
         {
             _name = name;
             _hash = hash;
             _id = id;
             messages.Add(lastReadMessage);
-        }
+            _unreadMessagesCount = unreadMessagesCount;
+            _lastReadMessageId = lastReadMessage.Id;
+		}
 
-        private int _id;
-        private string _name;
-        private string _hash;
-        private List<MessageDTO> messages = new();
-        private int? _lastReadMessageId { get; set; }
+        protected int _id;
+        protected string _name;
+        protected string _hash;
+        protected List<MessageDTO> messages = new();
+        protected int _unreadMessagesCount { get; set; }
+        protected int? _lastReadMessageId { get; set; }
         public int? LastReadMessageId { get { return _lastReadMessageId; } }
-
+        public int UnreadMessagesCount { get { return _unreadMessagesCount; } }
         public int Id { get { return _id; } }
         public string Hash { get { return _hash; } }
         public string Name { get { return _name; } }
@@ -35,7 +38,7 @@ namespace Core
             return messages.Last();
         }
 
-        public List<MessageDTO> GetUnreadMessagesInChat(ChatRepository chatRepository, int userId)
+        public List<MessageDTO> GetUnreadMessagesInChat(IChatStorage chatRepository, int userId)
         {
             var unreadMessages = chatRepository.UpdateLastReadMessage(_id, userId);
 

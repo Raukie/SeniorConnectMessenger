@@ -1,7 +1,7 @@
 ﻿using DataAccessLayer.DTO;
 using System.Text.Json.Serialization;
 
-namespace SeniorConnectMessengerWeb.Models.DTO
+namespace Core.Models.DTO
 {
     public class ChatPollDTO
     {

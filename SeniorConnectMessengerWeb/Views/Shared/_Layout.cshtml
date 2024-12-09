@@ -14,7 +14,8 @@
     <link rel="stylesheet" href="~/SeniorConnectMessengerWeb.styles.css" asp-append-version="true" />
 </head>
 <body>
-    
+    <partial name="_UserOptions" />
+
     <div class="MainContainer">
             <!--left navbar with settings and profile-->
         <div class="MainContainerBar">
@@ -31,12 +32,85 @@
                     <partial name="_Chat" />
                 </div>
                 <!--For seeing a friends profile-->
-                <div id="SecondaryContainer">
-                    
+                <div style="display:none;" id="SecondaryContainer">
+                    <div id="UserList">
+                        <div class="UserListUser" ShowTargetPopupId="UserOptionsPopup"
+                             PopupX="left" PopupY="bottom" />
+                            <div class="UserListInfo">
+                                <div class="UserListName">Ryan Evertz</div>
+                                <div class="UserListAdmin">Admin</div>
+                            </div>
+                            <div class="UserListButtons">
+                                <span class="material-symbols-outlined">more_vert</span>
+                            </div>
+                        </div>
+                <div class="UserListUser" ShowTargetPopupId="UserOptionsPopup"
+                             PopupX="left" PopupY="bottom" />
+                            <div class="UserListInfo">
+                                <div class="UserListName">Ryan Evertz</div>
+                                <div class="UserListAdmin">Admin</div>
+                            </div>
+                            <div class="UserListButtons" >
+                                <span class="material-symbols-outlined">more_vert</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        $(document).ready(() => {
+            $(".UserListUser").click(ShowPopup);
+            $(".SeniorPopup").focusout(HidePopup);
+        });
+
+        function HidePopup() {
+            console.log("hide");
+            $(this).hide();
+        }
+
+        function ShowPopup() {
+            console.log("show");
+
+            const popup = $("#" + $(this).attr("ShowTargetPopupId"))
+            if (popup.css("display") != "none") {
+                popup.hide();
+                return;
+            }
+
+            const originElementRect = this.getBoundingClientRect();
+            const x = $(this).attr("PopupX");
+            const y = $(this).attr("PopupY");
+            if (popup == null) {
+                console.warn("Popup with the id: " + $(this).attr("ShowTargetPopupId") + " not found");
+                return;
+            }
+            const width = popup.width();
+            const height = popup.height();
+
+            let clientXPosition = 0;
+            let clientYPosition = 0;
+            if (x == "left") {
+                clientXPosition = originElementRect.right - width;
+            } else if (x == "right") {
+                clientXPosition = originElementRect.left;
+            } else if (x == "center") {
+                clientXPosition = (originElementRect.left + originElementRect.width / 2) - width / 2;
+            }
+
+            if (y == "top") {
+                clientYPosition = originElementRect.top;
+            } else if (y == "bottom") {
+                clientYPosition = originElementRect.bottom;
+            }
+
+            popup.css("left", clientXPosition);
+            popup.css("top", clientYPosition);
+            popup.show();
+            popup.focus();
+        }
+    </script>
 </body>
 </html>

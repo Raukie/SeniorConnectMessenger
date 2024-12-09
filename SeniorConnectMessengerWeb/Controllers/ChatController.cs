@@ -1,73 +1,84 @@
-﻿using DataAccessLayer.DTO;
+﻿using core.Helpers;
+using Core.Models.DTO;
+using DataAccessLayer.DTO;
 using Infrastructure.DataAccessLayer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SeniorConnectMessengerWeb.Helpers;
 using SeniorConnectMessengerWeb.Models.DTO;
+using System.Runtime.Serialization.Json;
 
 namespace SeniorConnectMessengerWeb.Controllers
 {
     [Authorize]
-    public class ChatController(ChatRepository chatRepository, UserService userService, ChatService chatService): Controller
+    public class ChatController(UserService userService, ChatService chatService, IChatStorage chatRepository): Controller
     {
-        private ChatRepository _chatRepository = chatRepository ?? throw new ArgumentNullException(nameof(chatRepository));
         private UserService _userService = userService ?? throw new ArgumentNullException(nameof(userService));
         private ChatService _chatService = chatService ?? throw new ArgumentNullException(nameof(chatService));
 
-        public IActionResult GetUserChats()
-        {
-            int userId = userService.GetCurrentUserId(HttpContext);
-            var chats = chatRepository.GetChatsUserIsIn(userId);
+        /// <summary>
+        /// Only used to pass to the domain classes, nothing else!
+        /// </summary>
+        private IChatStorage _chatRepository = chatRepository ?? throw new ArgumentNullException(nameof(chatRepository));
 
-            return Json(chats);
+        public IResult GetUserChats()
+        {
+            int userId = _userService.GetCurrentUserId(HttpContext);
+            var chats = chatService.GetAllChatsUserIsIn(userId);
+
+            return Results.Ok(chats);
         }
 
-        public IActionResult GetChatContent(int chatId)
+        public IResult GetChatContent(int chatId)
         {
-            int userId = userService.GetCurrentUserId(HttpContext);
-            var chat = chatRepository.GetChat(chatId, userId, true);
-            return Json(chat);
+            int userId = _userService.GetCurrentUserId(HttpContext);
+            var chat = _chatService.GetChat(chatId, userId, true);
+            return Results.Ok(chat);
         }
         [HttpPost()]
-        public IActionResult PollForUpdates(List<ChatPollDTO> chatsToPoll)
+        public IResult PollForUpdates(List<ChatPollDTO> chatsToPoll)
         {
-            int userId = userService.GetCurrentUserId(HttpContext);
-            var chats = _chatService.GetAllChatsUserIsIn(userId);
-            List<ChatUpdateDTO> chatUpdatesDTO = new List<ChatUpdateDTO>();
+			int userId = _userService.GetCurrentUserId(HttpContext);
+			var chatsToUpdate = _chatService.FetchChatUpdates(userId, chatsToPoll);
+			return Results.Ok(chatsToUpdate);
+        }
 
-            foreach (var chatToPoll in chatsToPoll) 
+        [HttpPost()]
+        public IResult RemoveUserFromChat(int chatId, int userId)
+        {
+            int loggedInUserId = _userService.GetCurrentUserId(HttpContext);
+            var groupChat = _chatService.GetGroupChat(chatId, userId);
+
+            var loggedInUser = _userService.GetUser(loggedInUserId);
+            var user = _userService.GetUser(userId);
+
+            // no error message needed, could only be malicious
+            if (loggedInUser == null || user == null)
             {
-                var chat = chats.FirstOrDefault(cht=>cht.Id == chatToPoll.Id);
-                //chat has been removed
-                if(chat == null)
-                {
-                    chatUpdatesDTO.Add(new ChatUpdateDTO() { Removed = true, Id = chatToPoll.Id });
-                    continue;
-                }
-                ChatUpdateDTO chatUpdate = new() { Id = chat.Id };
-                chatUpdate.Hash = chatToPoll.Hash;
-
-                // if hash is different the name is altered or the users. Update name here
-                if (chat.ShouldUpdateUI(chatToPoll.Hash))
-                {
-                    chatUpdate.Hash = chat.Hash;
-                    chatUpdate.Name = chat.Name;
-                }
-
-                if (chatToPoll.IsOpen)
-                {
-                    chatUpdate.messages = chat.GetUnreadMessagesInChat(chatRepository, userId);
-                } else if(chat.GetLastMessage().Id != chatToPoll.LastFetchedMessageId)
-                {
-                    chatUpdate.messages.Add(chat.GetLastMessage());
-                } else
-                {
-                    continue;  
-                }
-                chatUpdatesDTO.Add(chatUpdate);
+                return Results.Problem();
             }
 
-            return Json(chatUpdatesDTO);
+            groupChat.RemoveUserFromChat(_chatRepository, user, loggedInUser);
+            return Results.Ok();
+        }
+
+        [HttpPost()]
+        public IResult MakeUserAdmin(int chatId, int userId)
+        {
+            int loggedInUserId = _userService.GetCurrentUserId(HttpContext);
+            var groupChat = _chatService.GetGroupChat(chatId, userId);
+
+            var loggedInUser = _userService.GetUser(loggedInUserId);
+            var user = _userService.GetUser(userId);
+
+            // no error message needed, could only be malicious
+            if (loggedInUser == null || user == null)
+            {
+                return Results.Problem();
+            }
+
+            groupChat.MakeUserAdmin(_chatRepository, user, loggedInUserId);
+            return Results.Ok();
         }
     }
 }

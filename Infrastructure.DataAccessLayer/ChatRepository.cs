@@ -4,7 +4,9 @@ using DataAccessLayer.Extensions;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Data;
+using System.Data.Common;
 using System.Security.Cryptography;
+using System.Transactions;
 
 namespace Infrastructure.DataAccessLayer
 {
@@ -12,7 +14,7 @@ namespace Infrastructure.DataAccessLayer
     /// The chat repository class should be used for fetching and alterting
     /// data in the database.
     /// </summary>
-    public class ChatRepository(string connectionString) : Repository(connectionString)
+    public class ChatRepository(string connectionString) : Repository(connectionString), IChatStorage
     {
         /// <summary>
         /// Updates the last read message id and sends the difference in messages
@@ -111,7 +113,7 @@ namespace Infrastructure.DataAccessLayer
 
                 using (var reader = command.ExecuteReader())
                 {
-                    while(reader.Read())
+                    while (reader.Read())
                     {
                         chat.Users.Add(new()
                         {
@@ -127,7 +129,7 @@ namespace Infrastructure.DataAccessLayer
                     SELECT [ChatID], [Content], [UserID], [SendAt], [ID]
                     FROM [Messages]
                     WHERE [ChatID] = @ChatId
-                    ORDER BY [SendAt] ASC
+                    ORDER BY [SendAt] DESC
                 ");
 
                 command.Parameters.AddWithValue("@ChatId", chatId);
@@ -148,7 +150,7 @@ namespace Infrastructure.DataAccessLayer
                 if (updateLastReadMessage && chat.Messages.Count > 0)
                 {
                     command = transaction.CreateCommand(@"UPDATE [UserChats] SET LastReadMessageID = @LastReadMessageId WHERE [ChatID] = @ChatId AND [UserID] = @UserId");
-                    command.Parameters.AddWithValue("@LastReadMessageID", chat.Messages.OrderByDescending(c=>c.Id).First().Id);
+                    command.Parameters.AddWithValue("@LastReadMessageID", chat.Messages.OrderByDescending(c => c.Id).First().Id);
                     command.Parameters.AddWithValue("@ChatId", chatId);
                     command.Parameters.AddWithValue("@UserId", userId);
                     command.ExecuteNonQuery();
@@ -157,18 +159,64 @@ namespace Infrastructure.DataAccessLayer
             return chat;
         }
 
+        public bool IsUserAdmin(int chatId, int userId)
+        {
+            using (var transaction = CreateTransaction())
+            {
+                var command = transaction.CreateCommand(@"
+                    SELECT [IsAdmin] FROM [UserChats] WHERE [UserID] = @UserID AND [ChatID] = @ChatId
+                ");
+
+                command.Parameters.AddWithValue("@ChatId", chatId);
+                command.Parameters.AddWithValue("@UserId", userId);
+
+                return (bool)command.ExecuteScalar(); // if more then one row altered it is a success
+            }
+        }
+
+
+        public bool MakeUserAdmin(int chatId, int userId)
+        {
+            using (var transaction = CreateTransaction())
+            {
+                var command = transaction.CreateCommand(@"
+                    UPDATE [UserChats] SET [IsAdmin] = true WHERE [UserID] = @UserID AND [ChatID] = @ChatId
+                ");
+
+                command.Parameters.AddWithValue("@ChatId", chatId);
+                command.Parameters.AddWithValue("@UserId", userId);
+
+                return command.ExecuteNonQuery() > 0; // if more then one row altered it is a success
+            }
+        }
+
+        public bool RemoveUserFromChat(int chatId, int userId)
+        {
+            using (var transaction = CreateTransaction())
+            {
+                var command = transaction.CreateCommand(@"
+                    REMOVE FROM [UserChats] WHERE [UserID] = @UserID AND [ChatID] = @ChatUd
+                ");
+
+                command.Parameters.AddWithValue("@ChatId", chatId);
+                command.Parameters.AddWithValue("@UserId", userId);
+
+                return command.ExecuteNonQuery() > 0; // if more then one row altered it is a success
+            }
+        }
+
         public List<ChatDTO> GetChatsUserIsIn(int userId)
         {
             List<ChatDTO> userChats = new();
-            using(var transaction = CreateTransaction())
+            using (var transaction = CreateTransaction())
             {
                 var command = transaction.CreateCommand(@"SELECT C.[ID]
                   ,C.[Name]
                   ,C.[IsGroupChat]
                   ,C.[Hash]
 	              ,M.ID As LastReadMessageID
-	              ,(SELECT TOP(1) ID FROM [Messages] WHERE C.ID = ChatID ORDER BY [SendAt] ASC ) AS LastFetchedMessageID
-	              ,(SELECT TOP(1) Content FROM [Messages] WHERE C.ID = ChatID ORDER BY [SendAt] ASC ) AS UnreadMessageContent
+	              ,(SELECT TOP(1) ID FROM [Messages] WHERE C.ID = ChatID ORDER BY [SendAt] DESC ) AS LastFetchedMessageID
+	              ,(SELECT TOP(1) Content FROM [Messages] WHERE C.ID = ChatID ORDER BY [SendAt] DESC ) AS UnreadMessageContent
 	              ,CASE WHEN M.ID IS NOT NULL THEN (SELECT COUNT(*) FROM [Messages] WHERE ID > M.ID AND ChatID = C.ID) ELSE (SELECT COUNT(*) FROM [Messages] WHERE ChatID = C.ID) END AS UnreadMessageCount
 	             FROM [dbo].[Chats] AS C
 	            LEFT JOIN [UserChats] AS UC
@@ -182,9 +230,9 @@ namespace Infrastructure.DataAccessLayer
 
                 command.Parameters.AddWithValue("@UserId", userId);
 
-                using (var reader = command.ExecuteReader()) 
+                using (var reader = command.ExecuteReader())
                 {
-                    while (reader.Read()) 
+                    while (reader.Read())
                     {
                         userChats.Add(new(reader["Name"].ToString())
                         {
@@ -224,7 +272,7 @@ namespace Infrastructure.DataAccessLayer
                     command.Parameters.AddWithValue($"@IsAdmin{commandCount}", user.IsAdmin);
                 }
                 command.Parameters.AddWithValue($"@ChatID", chatDto.Id);
-                command.Parameters.Add(new SqlParameter($"@LastReadMessageID", SqlDbType.Int) { Value = DBNull.Value});
+                command.Parameters.Add(new SqlParameter($"@LastReadMessageID", SqlDbType.Int) { Value = DBNull.Value });
                 command.CommandText = command.CommandText.TrimEnd('\n').TrimEnd(' ').TrimEnd(',');
                 command.ExecuteNonQuery();
             }
