@@ -1,8 +1,10 @@
 ﻿using DataAccessLayer.DTO;
+using DataAccessLayer.Extensions;
 using Infrastructure.DataAccessLayer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,14 +17,18 @@ namespace UnitTests.MockDataAccess
         {
             Chats.Add(chatDto);
             var newChat = Chats.Last();
-            newChat.Messages.Add(new MessageDTO($"{userCreatedBy.FirstName} {userCreatedBy.LastName} heeft de chat aangemaakt", null, DateTime.Now));
             newChat.Id = Chats.Count();
+            CreateMessage(newChat.Id, new MessageDTO($"{userCreatedBy.FirstName} {userCreatedBy.LastName} heeft de chat aangemaakt", null, DateTime.Now));
+            newChat.Hash = newChat.CalculateHash();
+            newChat.LastReadMessage = newChat.Messages.Last();
+            newChat.AmountOfUnreadMessages = 1;
             return newChat;
         }
 
         public void CreateMessage(int chatId, MessageDTO message)
         {
             var chat = Chats.FirstOrDefault(chat=>chat.Id == chatId);
+            message.Id = chat.Messages.Count + 1;
             chat.Messages.Add(message);
         }
 
@@ -70,7 +76,7 @@ namespace UnitTests.MockDataAccess
         public List<MessageDTO> UpdateLastReadMessage(int chatId, int userId)
         {
             var chat = Chats.FirstOrDefault(chat => chat.Id == chatId);
-            var unreadMessages = chat.Messages.Where(message => message.Id > chat.LastReadMessage.Id);
+            var unreadMessages = chat.Messages.Where(message => message.Id > chat.LastReadMessage.Id).ToList();
             chat.LastReadMessage = chat.Messages.LastOrDefault();
             return unreadMessages.ToList();
         }
