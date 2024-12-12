@@ -1,5 +1,6 @@
 ﻿using core.Helpers;
 using Core.Models.DTO;
+using Core.Services;
 using DataAccessLayer.DTO;
 using Infrastructure.DataAccessLayer;
 using Microsoft.AspNetCore.Authorization;
@@ -11,10 +12,12 @@ using System.Runtime.Serialization.Json;
 namespace SeniorConnectMessengerWeb.Controllers
 {
     [Authorize]
-    public class ChatController(UserService userService, ChatService chatService, IChatStorage chatRepository): Controller
+    public class ChatController(UserService userService, ChatService chatService, IChatStorage chatRepository,
+        ChatUpdateService chatUpdateService): Controller
     {
         private UserService _userService = userService ?? throw new ArgumentNullException(nameof(userService));
         private ChatService _chatService = chatService ?? throw new ArgumentNullException(nameof(chatService));
+        private ChatUpdateService _chatUpdateService = chatUpdateService ?? throw new ArgumentNullException(nameof(chatUpdateService));
 
         /// <summary>
         /// Only used to pass to the domain classes, nothing else!
@@ -39,7 +42,7 @@ namespace SeniorConnectMessengerWeb.Controllers
         public IResult PollForUpdates(List<ChatPollDTO> chatsToPoll)
         {
 			int userId = _userService.GetCurrentUserId(HttpContext);
-			var chatsToUpdate = _chatService.FetchChatUpdates(userId, chatsToPoll);
+			var chatsToUpdate = _chatUpdateService.FetchChatUpdates(userId, chatsToPoll);
 			return Results.Ok(chatsToUpdate);
         }
 
