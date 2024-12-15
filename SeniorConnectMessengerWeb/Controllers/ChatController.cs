@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SeniorConnectMessengerWeb.Helpers;
 using SeniorConnectMessengerWeb.Models.DTO;
+using System.Net;
 using System.Runtime.Serialization.Json;
 
 namespace SeniorConnectMessengerWeb.Controllers
@@ -30,6 +31,16 @@ namespace SeniorConnectMessengerWeb.Controllers
             var chats = chatService.GetAllChatsDataUserIsIn(userId);
 
             return Results.Ok(chats);
+        }
+
+        public IResult SendMessage(int chatId, string messageContent)
+        {
+            int userId = _userService.GetCurrentUserId(HttpContext);
+            var chat = _chatService.GetChat(chatId, userId, false);
+            var user = _userService.GetUser(userId);
+
+            chat.SendMessage(chatRepository, user, WebUtility.HtmlEncode(messageContent));
+            return Results.Ok();
         }
 
         public IResult GetChatContent(int chatId)

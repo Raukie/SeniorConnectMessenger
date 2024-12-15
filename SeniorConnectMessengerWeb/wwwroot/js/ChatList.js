@@ -56,8 +56,20 @@
                 $(s.currentTarget).attr("ChatId")
             );
         });
+
+        $("#ChatInputBar").keydown((e) => { if (e.keyCode == 13) self.TrySendMessage(); });
+        $("#ChatSendButton").click(() => { self.TrySendMessage(); });
         $("#ChatHeaderBar").click(() => { self.OpenChatSettings() });
         $("#CloseUserListHeader").click(() => { $("#SecondaryContainer").hide() });
+    }
+
+    TrySendMessage() {
+        let message = $("#ChatInputBar").val();
+        $("#ChatInputBar").val(null);
+        if (message == "" || message == null) {
+            return;
+        }
+        this.SendMessage(message);
     }
 
     OpenChatSettings() {
@@ -66,6 +78,14 @@
         }
         $("#SecondaryContainer").show();
 
+    }
+
+    SendMessage(message) {
+        $.ajax({
+            url: `${this.RelativeUrl}Chat/SendMessage`,
+            data: { messageContent: message, chatId: this.OpenChat.id },
+            method: "POST"
+        });
     }
 
     FetchChatContent(chatId) {
@@ -135,7 +155,7 @@
                 }
                 const chatItem = $(`[ChatId=${chat.id}]`);
                 if (chat.messages.length > 0) {
-                    chatItem.children(".LastChatMessage").text(chat.messages[messages.length].content);
+                    chatItem.children(".LastChatMessage").text(chat.messages[chat.messages.length].content);
                     document.getElementById('ChatContent').scrollTop = 0;
                 }
 
