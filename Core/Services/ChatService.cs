@@ -1,9 +1,11 @@
-﻿using Core;
+﻿using Azure.Messaging;
+using Core;
 using Core.Models.DTO;
 using Core.ObjectMapper;
 using DataAccessLayer.DTO;
 using Infrastructure.DataAccessLayer;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 
 namespace core.Helpers
@@ -31,7 +33,7 @@ namespace core.Helpers
         public Chat GetChat(int chatId, int userId, bool updateLastReadMessage)
         {
             return _chatRepository.GetChat(chatId, userId, updateLastReadMessage).ToChatDomain();
-		}
+        }
 
         public GroupChat GetGroupChat(int chatId, int userId)
 		{

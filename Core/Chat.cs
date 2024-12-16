@@ -32,9 +32,17 @@ namespace Core
         public string Hash { get { return _hash; } }
         public string Name { get { return _name; } }
 
-        public void SendMessage(IChatStorage chatStorage, UserDTO user, string messageContent) 
+        public bool SendMessage(IChatStorage chatStorage, UserDTO user, string messageContent) 
         {
-            chatStorage.CreateMessage(_id, new MessageDTO(messageContent) {User = user});
+            try
+            {
+                chatStorage.CreateMessage(_id, new MessageDTO(messageContent) {User = user});
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool ShouldUpdateUI(string hash)

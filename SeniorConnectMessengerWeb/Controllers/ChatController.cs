@@ -39,8 +39,13 @@ namespace SeniorConnectMessengerWeb.Controllers
             var chat = _chatService.GetChat(chatId, userId, false);
             var user = _userService.GetUser(userId);
 
-            chat.SendMessage(chatRepository, user, WebUtility.HtmlEncode(messageContent));
-            return Results.Ok();
+            if(user == null || chat.SendMessage(chatRepository, user, WebUtility.HtmlEncode(messageContent)))
+            {
+                return Results.Ok();
+            } else
+            {
+                return Results.Problem("Kon bericht niet versturen");
+            }
         }
 
         public IResult GetChatContent(int chatId)
