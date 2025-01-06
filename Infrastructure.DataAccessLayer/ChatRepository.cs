@@ -55,6 +55,7 @@ namespace Infrastructure.DataAccessLayer
                         unreadMessages.Add(new(reader["Content"].ToString())
                         {
                             SendAt = (DateTime)reader["SendAt"],
+                            Id = (int)reader["ID"],
                             User = (reader["UserID"] != DBNull.Value) ? chat.Users.FirstOrDefault(user => user.Id == (int)reader["UserID"]) : null // more efficient then fetching all users again
                         });
                         if ((int)reader["ID"] > lastReadMessageID)

@@ -155,18 +155,22 @@
                 }
                 const chatItem = $(`[ChatId=${chat.id}]`);
                 if (chat.messages.length > 0) {
-                    chatItem.children(".LastChatMessage").text(chat.messages[chat.messages.length].content);
+                    this.Chats.get(chat.id).lastReadMessage = chat.messages[0];
+                    $(".LastChatMessage", chatItem).text(chat.messages[chat.messages.length - 1].content);
                     document.getElementById('ChatContent').scrollTop = 0;
                 }
 
                 this.ChatListContainer.prepend(chatItem);
 
             } else if (chat.messages != null && chat.messages.length > 0) {
-                const chatItem = $(`[ChatId=${chat.id}]`);
+                if (chat.amountOfUnreadMessages != 0) {
+                    const chatItem = $(`[ChatId=${chat.id}]`);
+                    $(".GreenDot", chatItem).text(chat.amountOfUnreadMessages);
+                    $(".GreenDot", chatItem).show();
+                    this.ChatListContainer.prepend(chatItem);
+                }
                 $(".LastChatMessage", chatItem).text(chat.messages[0].content);
-                $(".GreenDot", chatItem).text(chat.amountOfUnreadMessages);
-                $(".GreenDot", chatItem).show();
-                this.ChatListContainer.prepend(chatItem);
+                this.Chats.get(chat.id).lastReadMessage = chat.messages[0];
             } else if (chat.removed == true) {
                 $(`[ChatId=${chat.id}]`).remove();
             }
