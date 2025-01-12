@@ -251,8 +251,8 @@ input.ChatInput:focus {
 }
 
 .GreenDot {
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
     background-color: var(--Secondary);
     border-radius: 100px;
     color: white;
@@ -463,4 +463,202 @@ input.ChatInput:focus {
     user-select: none;
     cursor: pointer;
 }
+
+#LeaveChatButton {
+    background-color: var(--Teriary);
+    color: white;
+    padding: 11px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    border-radius: 8px;
+    cursor: pointer;
+    align-content: center;
+
+    text-align: center;
+    width: 50%;
+    margin-left: 25%;
+    font-size: 20px;
+    padding: 10px;
+}
 /* endregion */
+
+/* Give the popup container a fixed width of 200px. 
+   (Inline styles remain for display and position.) */
+#FindUsersPopup {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background-color: var(--PrimaryLighter);
+    border-radius: 8px;
+    margin-right: 20px;
+    border: solid 1px var(--PrimaryDarker);
+    z-index: 60;
+    width: 380px;
+}
+
+    /* Example: refine styling of the ChatInput *only* inside this popup.
+   This won't override the generic ChatInput styles everywhere else. */
+#FindUsersPopup > .ChatInput {
+    margin: 8px;
+    width:90%!important;
+    /* Add any other specific adjustments for this context, if needed. */
+}
+
+    /* Style for the user list inside the popup */
+.UserList {
+    /* For example, spacing around the user list */
+    margin: 8px;
+    display: flex;
+    max-height: 300px;
+    overflow-y: scroll;
+    flex-direction: column;
+    align-items:center;
+    gap: 5px;
+}
+
+    /* FoundUser will just contain first and last name; 
+   here’s a simple style example. */
+.FoundUser {
+    padding: 10px;
+    width: 90%;
+    font-size: 20px;
+    background-color: var(--PrimaryDarker);
+    color: #ffffff;
+    border-radius: 4px;
+    /* Adjust or remove as needed. */
+}
+/*#region SeniorConnectModals*/
+.SeniorConnectModalContainer {
+    position: absolute;
+    display: grid; /* Using grid for easy centering or layering */
+    width: 100%;
+    height: 100%;
+    z-index: 40;
+}
+
+.SeniorConnectModalBackground {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: var(--PrimaryDarker); /* or black if you prefer */
+    opacity: 0.4; /* Dim overlay effect */
+}
+
+.SeniorConnectModal {
+    position: relative;
+    z-index: 41;
+    width: 800px;
+    /* Layout & spacing */
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 24px 24px 30px;
+    border-radius: 16px;
+    /* Themed colors */
+    background-color: var(--PrimaryLighter);
+    color: #fff;
+}
+
+/* Positioning “top” and “middle” variants */
+.SeniorConnectModalCenterTop {
+    justify-self: flex-start;
+    align-self: center;
+}
+
+.SeniorConnectModalCenterMiddle {
+    justify-self: center;
+    align-self: center;
+}
+
+/* Header & content styling */
+.SeniorConnectModalHeader {
+    text-align: center;
+    font-size: 32px;
+}
+
+.SeniorConnectModalContent {
+    width: 100%;
+    height: fit-content;
+    text-align: center;
+    padding-top: 27px;
+    font-size: 20px;
+    display:flex;
+    flex-flow: column;
+    gap: 5px;
+    justify-content: center;
+}
+
+.SeniorConnectModalButtons {
+    display: grid;
+    width: 100%;
+}
+
+.SeniorConnectModalOptionsContentRow {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 192px;
+}
+
+/* Buttons */
+.SeniorConnectButton {
+    padding: 5px 24px;
+    background-color: var(--Secondary);
+    color: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+    padding: 6px;
+    font-size: 18px;
+    text-align: center;
+    /* On hover, slightly darken Secondary color */
+    transition: background-color 0.2s ease-in-out;
+}
+
+.AddPersonButton {
+    background-color: var(--Teriary);
+    color: white;
+    padding: 6px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    border-radius: 8px;
+    cursor: pointer;
+    align-content: center;
+    text-align: center;
+    width: 50%;
+    margin-left: 25%;
+    font-size: 18px;
+    padding: 10px;
+}
+
+    .SeniorConnectButton:hover {
+        background-color: var(--SecondaryDarker);
+    }
+
+.SeniorConnectButtonRight {
+    align-self: flex-end;
+    justify-self: flex-end;
+    width: fit-content;
+}
+
+/* Modal text input */
+.SeniorConnectTextInput {
+    width: 100%;
+    font-size: 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    color: #333;
+    background-color: #f0f0f0;
+}
+
+/* Version number overlay */
+.SeniorConnectModalVersionNumber {
+    position: absolute;
+    left: 50%;
+    bottom: 5%;
+    transform: translate(-50%, 40%);
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    font-size: 12px;
+}
+/*#endregion*/

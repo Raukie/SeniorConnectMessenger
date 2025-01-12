@@ -5,6 +5,7 @@ using Microsoft.Data.SqlClient;
 using System;
 using System.Data;
 using System.Data.Common;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography;
 using System.Transactions;
 
@@ -35,8 +36,15 @@ namespace Infrastructure.DataAccessLayer
                 command.Parameters.AddWithValue("@ChatId", chatId);
                 command.Parameters.AddWithValue("@UserId", userId);
 
-                int lastReadMessageID = (int)command.ExecuteScalar();
+                // could be null if chat has been removed after the request was sent out to check for new messages
+                var lastReadMessage = command.ExecuteScalar();
 
+                if(lastReadMessage == null)
+                {
+                    return new();
+                }
+
+                int lastReadMessageID = (int)lastReadMessage;
 
                 command = transaction.CreateCommand(@"
                     SELECT [ID], [ChatID], [Content], [UserID], [SendAt]

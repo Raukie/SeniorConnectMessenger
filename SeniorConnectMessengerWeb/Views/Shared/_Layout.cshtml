@@ -14,7 +14,10 @@
     <link rel="stylesheet" href="~/SeniorConnectMessengerWeb.styles.css" asp-append-version="true" />
 </head>
 <body>
+    <partial name="_FindUsers" />
+    <partial name="_ChatWizard" />
     <partial name="_UserOptions" />
+
 
     <div class="MainContainer">
             <!--left navbar with settings and profile-->
@@ -43,6 +46,7 @@
                     <div id="UserList">
      
                     </div>
+                    <div id="LeaveChatButton" class="HelpButton">Verlaat chat</div>
                 </div>
             </div>
         </div>
@@ -52,9 +56,24 @@
         $(document).ready(() => {
             $(".UserListUser").click(ShowPopup);
             $(".SeniorPopup").focusout(HidePopup);
+            $("[ShowTargetPopupId]").click(ShowPopup);
+            $("[HideTargetModalId]").click(HideModal);
         });
 
-        function HidePopup() {
+        function ShowModal() {
+            const modalId = $(this).attr("ShowTargetModalId");
+            $("#" + modalId).show();
+        }
+
+        function HideModal() {
+            const modalId = $(this).attr("HideTargetModalId");
+            $("#" + modalId).hide();
+        }
+
+        function HidePopup(e) {
+            if (this.contains(e.relatedTarget)) {
+                return;
+            }
             console.log("hide");
             $(this).hide();
         }

@@ -63,6 +63,18 @@ namespace SeniorConnectMessengerWeb.Controllers
         }
 
         [HttpPost()]
+        public IResult LeaveChat(int chatId)
+        {
+            int userId = _userService.GetCurrentUserId(HttpContext);
+            var user = _userService.GetUser(userId);
+
+            var chat = _chatService.GetChat(chatId, userId, false);
+            chat.UserLeaveChat(chatRepository, user);
+
+            return Results.Ok();
+        }
+
+        [HttpPost()]
         public IResult RemoveUserFromChat(int chatId, int userId)
         {
             int loggedInUserId = _userService.GetCurrentUserId(HttpContext);

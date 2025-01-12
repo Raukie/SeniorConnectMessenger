@@ -3,6 +3,8 @@ using DataAccessExtensions.Extensions;
 using DataAccessLayer.DTO;
 using DataAccessLayer.Extensions;
 using Microsoft.Data.SqlClient;
+using System.Text;
+using System.Transactions;
 
 namespace Infrastructure.DataAccessLayer
 {
@@ -141,5 +143,66 @@ namespace Infrastructure.DataAccessLayer
             }
             return userDTO;
         }
-    }
+
+        public List<UserDTO> FindUser(string searchQuery)
+        {
+            var users = new List<UserDTO>();
+
+            string[] tokens = searchQuery.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                    var sb = new StringBuilder(@"
+            SELECT U.ID, U.Username, U.Password,
+                   UP.FirstName, UP.LastName, UP.Gender, 
+                   UP.Street, UP.City, UP.HouseNumber, UP.BirthDate, 
+                   UP.SearchRadius, UP.Zipcode, UP.Initials, UP.Country
+            FROM [Users] U
+            INNER JOIN [UserProfile] UP ON U.ID = UP.UserID
+            WHERE 1=1 
+        ");
+
+                    int paramIndex = 0;
+                    foreach (var token in tokens)
+                    {
+                        sb.Append($@"
+              AND (UP.FirstName LIKE @Param{paramIndex} 
+                   OR UP.LastName LIKE @Param{paramIndex})
+            ");
+                        paramIndex++;
+                    }
+            using(var transaction = CreateTransaction()) 
+            {
+                var command = transaction.CreateCommand(sb.ToString());
+
+                // Add parameters
+                paramIndex = 0;
+                foreach (var token in tokens)
+                {
+                    command.Parameters.AddWithValue($"@Param{paramIndex}", $"%{token}%");
+                    paramIndex++;
+                }
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        users.Add(new UserDTO(reader["Username"].ToString(), (int)reader["ID"])
+                        {
+                            FirstName = reader["FirstName"].ToString(),
+                            LastName = reader["LastName"].ToString(),
+                            Gender = reader["Gender"].ToString(),
+                            Street = reader["Street"].ToString(),
+                            City = reader["City"].ToString(),
+                            HouseNumber = reader["HouseNumber"].ToString(),
+                            BirthDate = (DateTime)reader["BirthDate"],
+                            SearchRadius = (int)reader["SearchRadius"],
+                            Zipcode = reader["Zipcode"].ToString(),
+                            Initials = reader["Initials"].ToString(),
+                            Country = reader["Country"].ToString()
+                        });
+                    }
+                }
+            }
+            return users;
+        }
+}
 }

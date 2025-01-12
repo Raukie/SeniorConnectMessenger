@@ -64,6 +64,16 @@ namespace Core
             return unreadMessages;
         }
 
+
+        public bool UserLeaveChat(IChatStorage chatRepository, UserDTO user)
+        {
+            chatRepository.CreateMessage(_id,
+                new MessageDTO($"{user.FirstName} {user.LastName} heeft de chat verlaten")
+            );
+
+            return chatRepository.RemoveUserFromChat(_id, user.Id!.Value);
+        }
+
         public IReadOnlyCollection<MessageDTO> GetMessages()
         {
             return messages;

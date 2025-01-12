@@ -12,7 +12,8 @@
         $(document).ready(() => {
             $("#DeleteUser").click(() => { self.DeleteUser() })
             $("#AdminUser").click(() => { self.AdminUser() })
-        })
+            $("#LeaveChatButton").click(() => self.LeaveChat());
+        });
     }
 
     Chats;
@@ -21,6 +22,20 @@
     ChatListContainer = $("#ChatListInnerContainer");
     OpenChat;
     SelectedUser = { element: null, user: null};
+
+    LeaveChat() {
+        this.Chats.delete(this.OpenChat.id);
+        $(`[chatid='${this.OpenChat.id}']`).remove();
+        $("#ChatContent").empty();
+        $("#ChatHeaderBar").text(null);
+        $.ajax({
+            url: `${this.RelativeUrl}Chat/LeaveChat`,
+            method: "POST",
+            data: { chatId: this.OpenChat.id }
+        });
+        this.OpenChat = null;
+        $("#CloseUserListHeader").click();
+    }
 
     DeleteUser() {
         $("#UserOptionsPopup").hide();

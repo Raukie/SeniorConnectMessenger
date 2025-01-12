@@ -1,0 +1,51 @@
+﻿<div class="SeniorPopup" id="FindUsersPopup" tabindex="1" style="position:absolute;">
+    <input id="FindUserInput" class="ChatInput" tabindex="-1" placeholder="Zoek op naam..."></input>
+    <div id="FoundUserList" class="UserList">
+
+    </div>
+</div>
+
+<script>
+
+    (() => {
+        $("#FindUserInput").on("input", (e) => {
+            QueryUsers($("#FindUserInput").val());
+        })
+    })()
+
+    function QueryUsers(input){
+        var userList = $("#FoundUserList");
+        if (input.length < 1) {
+            userList.empty();
+            return;
+        }
+
+        $.ajax({
+            url: '@Url.Action("FindUsers", "User")',
+            method: "GET",
+            data: {query: input},
+            success: (result) => { ProcessUsers(result) }
+        })
+    }
+
+    var foundUsers = [];
+
+    function ProcessUsers(users){
+        var userList = $("#FoundUserList");
+        foundUsers = []; 
+        userList.empty();
+        for (let user of users) {
+            var userElement = $(`<div class="FoundUser">
+                    ${user.firstName} ${user.lastName}
+                </div>`);
+
+            userElement.click(() => {ClickedOnUser(user) })
+            userList.append(userElement);
+            
+        }
+    }
+
+    function ClickedOnUser(user){
+        
+    }
+</script>
