@@ -340,7 +340,7 @@ input.ChatInput:focus {
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     overflow: scroll;
-    max-height: 600px;
+    max-height: 400px;
 }
 
 /* Individual User Item */
@@ -465,7 +465,7 @@ input.ChatInput:focus {
 }
 
 #LeaveChatButton {
-    background-color: var(--Teriary);
+    background-color: #E7504C;
     color: white;
     padding: 11px;
     padding-top: 6px;
@@ -473,7 +473,6 @@ input.ChatInput:focus {
     border-radius: 8px;
     cursor: pointer;
     align-content: center;
-
     text-align: center;
     width: 50%;
     margin-left: 25%;
@@ -525,8 +524,31 @@ input.ChatInput:focus {
     background-color: var(--PrimaryDarker);
     color: #ffffff;
     border-radius: 4px;
+    cursor: pointer;
     /* Adjust or remove as needed. */
 }
+
+.OptionsBar {
+    padding: 10px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+#AddChat {
+    background: var(--PrimaryDarker);
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.FoundUserWithOptions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
 /*#region SeniorConnectModals*/
 .SeniorConnectModalContainer {
     position: absolute;
@@ -662,3 +684,72 @@ input.ChatInput:focus {
     font-size: 12px;
 }
 /*#endregion*/
+
+#LeaveChatButton {
+    font-size: 18px!important;
+}
+
+.SettingsContainer {
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+}
+
+.LogoutButton {
+    background-color: #E7504C;
+    color: white;
+    padding: 6px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    border-radius: 8px;
+    cursor: pointer;
+    align-content: center;
+    text-align: center;
+    width: 50%;
+    margin-left: 25%;
+    font-size: 18px;
+    padding: 10px;
+}
+
+#ProfileInnerContainer {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.TabHeader {
+    text-align: center;
+    color: white;
+    font-size: 28px;
+    padding-bottom: 30px;
+}
+
+.UserInfoList {
+    /* Geen achtergrond, geen border */
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 20px;
+    /* Typografie en spacing */
+    font-size: 16px;
+    color: #333; /* Basis tekstkleur */
+    line-height: 1.8; /* Extra ruimte tussen de regels */
+}
+
+    /* Afstand tussen de regels */
+    .UserInfoList > div {
+        margin-bottom: 10px;
+    }
+
+/* Label krijgt nadruk, bijvoorbeeld via de thema-kleur */
+.UserInfoLabel {
+    font-weight: 600;
+    color: var(--PrimaryDarker);
+    margin-right: 8px;
+}
+
+/* Waarde blijft neutraal */
+.UserInfoValue {
+    font-weight: 400;
+    color:white;
+}

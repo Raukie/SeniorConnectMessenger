@@ -6,20 +6,21 @@
 }
 
 @inject UserService userService
-<div class="OptionsBar">
-    <div id="AddChat" style="float:right;" class="material-symbols-outlined">
-        add
+<div id="ChatListContainer">
+    <div class="OptionsBar">
+        <div id="AddChat" class="material-symbols-outlined">
+            add
+        </div>
+    </div>
+    <div id="ChatListInnerContainer">
     </div>
 </div>
-<div  id="ChatListInnerContainer">
-</div>
+  
 
 <script src="~/js/ChatList.js"></script>
 <script>
     const chatList = new ChatList(@userService.GetCurrentUserId(Context), "/");
     (() => {
-        $("#AddChat").click(() => {
-            $("#ChatWizardModal").show();   
-        })
+       
     })()
 </script>

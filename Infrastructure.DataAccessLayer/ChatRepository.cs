@@ -260,6 +260,23 @@ namespace Infrastructure.DataAccessLayer
             return userChats;
         }
 
+        public bool AddUserToChat(UserDTO user, int chatId)
+        {
+            using (var transaction = CreateTransaction())
+            {
+                var command = transaction.CreateCommand("INSERT INTO [UserChats] (UserID, LastReadMessageID, ChatID, IsAdmin) VALUES \n");
+
+                command.CommandText += $"(@UserID, @LastReadMessageID, @ChatID, @IsAdmin)";
+                command.Parameters.AddWithValue($"@UserID", user.Id);
+                command.Parameters.AddWithValue($"@IsAdmin", false);
+
+                command.Parameters.AddWithValue($"@ChatID", chatId);
+                command.Parameters.Add(new SqlParameter($"@LastReadMessageID", SqlDbType.Int) { Value = DBNull.Value });
+
+                return command.ExecuteNonQuery() > 0;
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>

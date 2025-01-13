@@ -47,6 +47,20 @@ namespace Core.Services
                 }
             }
 
+            var newChats = chats.Where(dbChat => (!chatsToPoll.Any(chat => chat.Id == dbChat.Id)));
+            var allChatsData = _chatService.GetAllChatsDataUserIsIn(userId);
+
+            foreach(var newChat in newChats)
+            {
+                var newChatData = allChatsData.First(c => c.Id == newChat.Id);
+                chatUpdatesDTO.Add(new()
+                {
+                    NewChat = newChatData,
+                    IsNewChat = true,
+                    AmountOfUnreadMessages = 1
+                });
+            }
+
             return chatUpdatesDTO;
         }
 

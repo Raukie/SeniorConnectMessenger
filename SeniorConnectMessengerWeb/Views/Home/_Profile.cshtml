@@ -1,9 +1,37 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+
+@using SeniorConnectMessengerWeb.Constants
+@using SeniorConnectMessengerWeb.Helpers
+@inject UserService userService
+
 @{
+    var user = userService.GetUser(
+        Convert.ToInt32(User.FindFirst(claim => claim.Type == AuthenticationConstants.UserIdClaim).Value)
+    );
 }
 
 <div style="display:none;" id="ProfileInnerContainer">
-    
+    <div class="TabHeader">
+        Profiel
+    </div>
+    <div class="UserInfoList">
+        <div>
+            <span class="UserInfoLabel">Voornaam:</span>
+            <span class="UserInfoValue">@user.FirstName</span>
+        </div>
+        <div>
+            <span class="UserInfoLabel">Achternaam:</span>
+            <span class="UserInfoValue">@user.LastName</span>
+        </div>
+        <div>
+            <span class="UserInfoLabel">Gebruikersnaam:</span>
+            <span class="UserInfoValue">@user.Username</span>
+        </div>
+        <div>
+            <span class="UserInfoLabel">Geboortedatum:</span>
+            <span class="UserInfoValue">@user.BirthDate.Value.ToString("dd-MM-yyyy")</span>
+        </div>
+    </div>
 </div>

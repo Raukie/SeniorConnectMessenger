@@ -5,10 +5,10 @@
 }
 
 <div style="display:none;" id="ChatWizardModal" class="SeniorConnectModalContainer">
-    <div HideTargetModalId="ChatWizardModal" class="SeniorConnectModalBackground">
+    <div  class="SeniorConnectModalBackground">
     </div>
     <div class="SeniorConnectModal SeniorConnectModalCenterMiddle">
-        <div HideTargetModalId="ChatWizardModal" class="SeniorConnectModalHeader">
+        <div id="CloseWizardButton" class="SeniorConnectModalHeader">
             <div >
                 <span style="user-select:none;cursor:pointer;float:right;" class="material-symbols-outlined">
                     close
@@ -16,18 +16,18 @@
             </div>
         </div>
         <div class="SeniorConnectModalContent">
-            <input class="ChatInput" id="ChatNameInput" placeholder="Vul de chat naam in..."/>
+            <input autocomplete="off" min="5" maxlength="35" required class="ChatInput" id="ChatNameInput" placeholder="Vul de chat naam in..." />
             </br>
             <div PopupX="right" PopupY="top" id="AddUser" class="AddPersonButton" ShowTargetPopupId="FindUsersPopup">
                 Voeg een persoon toe
             </div>
-            <div style="max-height: 500px;" class="UserList">
+            <div style="max-height: 500px;" id="NewUsersList" class="UserList">
 
             </div>
         </div>
         <div class="SeniorConnectModalButtons">
             
-            <div HideTargetModalId="ChatWizardModal" class="SeniorConnectButton SeniorConnectButtonRight">
+            <div id="CreateChat" class="SeniorConnectButton SeniorConnectButtonRight">
                 Aanmaken
             </div>
         </div>
@@ -36,8 +36,98 @@
 
 <script>
     (() => {
-        $("#AddUser").click(()=>{
+        $("#AddUser").click(() => {
             $("#FindUserInput").focus();
-        })
+        });
+
+        $("#CloseWizardButton").click(() => {
+            $("#ChatWizardModal").hide();
+            $("#NewUsersList").empty();
+            $("#ChatNameInput").val(null)
+            newUsers.clear();
+        });
+
+        $("#AddChat").click(() => {
+            $("#ChatWizardModal").show();
+            $("#NewUsersList").empty();
+            newUsers.clear();
+            window.ClickOnUserCallback = AddUserToNewGroup;
+        });
+
+        $("#CreateChat").click(CreateChat);
+
     })()
+
+    var newUsers = new Map();
+
+    function CreateChat() {
+        if ($("#ChatNameInput").val() == null || $("#ChatNameInput").val().length < 5) {
+            $.toast({
+                heading: 'Error',
+                text: 'Chat naam moet minimaal 10 karakters zijn',
+                showHideTransition: 'fade',
+                icon: 'error'
+            });
+            return;
+        }
+
+        if(newUsers.size < 2){
+            $.toast({
+                heading: 'Error',
+                text: 'Een chat moet minimaal 2 mensen bevatten',
+                showHideTransition: 'fade',
+                icon: 'error'
+            });
+            return;
+        }
+
+        var userIds = newUsers.values().toArray().map(user => user.id)
+
+        $.ajax({
+            url: '@Url.Action("CreateChat", "chat")',
+            data:
+            {
+                chatName: $("#ChatNameInput").val(),
+                userIds: userIds
+            },
+            traditional: true,
+            method: "POST"
+        });
+        
+        $("#ChatWizardModal").hide();
+        $("#CloseWizardButton").click();
+    }
+    
+    function AddUserToNewGroup(user) {
+        ClearAllFindUsers();
+        $("#FindUsersPopup").hide();
+        if (newUsers.has(user.id)) {
+            $.toast({
+                heading: 'Error',
+                text: 'Deze gebruiker is al toegevoegd',
+                showHideTransition: 'fade',
+                icon: 'error'
+            });
+            return;
+        }
+
+        newUsers.set(user.id, user);
+        var userList = $("#NewUsersList");
+        var userElement = $(`<div class="FoundUser FoundUserWithOptions">
+            <div>${user.firstName} ${user.lastName}</div>
+            <div>
+                <span style="user-select:none;cursor:pointer;float:right;" class="material-symbols-outlined">
+                    close
+                </span>
+            </div>
+        </div>`);
+
+        $("span", userElement).click(() => {
+            userElement.remove();
+            newUsers.remove(user.id);
+        });
+
+        userList.append(userElement)
+    }
+
 </script>

@@ -37,6 +37,9 @@
         if (this.ChatState) {
             if (this.MyProfileState) this.ClickedMyProfile(false);
             if (this.SettingsState) this.ClickedSettings(false);
+            $("#ChatListContainer").show();
+        } else {
+            $("#ChatListContainer").hide();
         }
         this.SetButtonActive(this.ChatButton, state);
     }
@@ -48,7 +51,11 @@
         if (this.MyProfileState) {
             if (this.ChatState) this.ClickedChat(false);
             if (this.SettingsState) this.ClickedSettings(false);
+            $("#ProfileInnerContainer").show();
+        } else {
+            $("#ProfileInnerContainer").hide();
         }
+
         this.SetButtonActive(this.MyPofileButton, state);
     }
 
@@ -59,6 +66,9 @@
         if (this.SettingsState) {
             if (this.ChatState) this.ClickedChat(false);
             if (this.MyProfileState) this.ClickedMyProfile(false);
+            $("#SettingsInnerContainer").show();
+        } else {
+            $("#SettingsInnerContainer").hide();
         }
         this.SetButtonActive(this.SettingsButton, state);
     }

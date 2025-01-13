@@ -5,5 +5,21 @@
 }
 
 <div style="display:none;" id="SettingsInnerContainer">
+    <div class="SettingsContainer">
+        <div class="TabHeader">
+            Instellingen
+        </div>
 
+        <div id="LogoutButton" class="LogoutButton">
+            Uitloggen
+        </div>
+    </div>
 </div>
+
+<script>
+    (() => {
+        $("#LogoutButton").click(() => {
+            window.location.href = '@Url.Action("Logout", "Auth")';
+        })
+    })()
+</script>

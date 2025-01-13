@@ -19,6 +19,24 @@ namespace Core
             return chatRepository.RemoveUserFromChat(_id, user.Id!.Value);
         }
 
+        public bool AddUser(IChatStorage chatRepository, UserDTO user, UserDTO userActor)
+        {
+            if (!IsUserAdmin(chatRepository, userActor.Id!.Value))
+            {
+                return false;
+            }
+
+            if(!chatRepository.AddUserToChat(user, this.Id))
+            {
+                return false;
+            }
+
+            chatRepository.CreateMessage(_id,
+                new MessageDTO($"{user.FirstName} {user.LastName} heeft {userActor.FirstName} {userActor.LastName} toegevoegd")
+            );
+
+            return true;
+        }
         public bool MakeUserAdmin(IChatStorage chatRepository, UserDTO user, int userIdActor)
         {
             if (!IsUserAdmin(chatRepository, userIdActor))

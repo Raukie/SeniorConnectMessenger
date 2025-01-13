@@ -76,6 +76,38 @@
         $("#ChatSendButton").click(() => { self.TrySendMessage(); });
         $("#ChatHeaderBar").click(() => { self.OpenChatSettings() });
         $("#CloseUserListHeader").click(() => { $("#SecondaryContainer").hide() });
+        $("#AddUserToChat").click(() => { self.SetAddUserCallback() })
+    }
+
+    SetAddUserCallback() {
+        const self = this;
+        window.ClickOnUserCallback = (user) => { self.AddUserToChat(user) };
+    }
+
+    AddUserToChat(user) {
+        $("#FindUsersPopup").hide();
+        $("#FindUserInput").val(null);
+        if (this.OpenChat.users.some(u => u.id == user.id)) {
+            $.toast({
+                heading: 'Error',
+                text: 'Deze gebruiker zit al in de chat',
+                showHideTransition: 'fade',
+                icon: 'error'
+            });
+            return;
+        }
+        this.OpenChat.users.push(user)
+        user.isAdmin = false;
+        $.ajax({
+            url: `${this.RelativeUrl}Chat/AddUser`,
+            method: "POST",
+            data: { userId: user.id, chatId: this.OpenChat.id },
+            success: () => {
+                this.RenderUser(user);
+            }
+        });
+
+
     }
 
     TrySendMessage() {
@@ -92,7 +124,6 @@
             return; // don't do anything when header clicked
         }
         $("#SecondaryContainer").show();
-
     }
 
     SendMessage(message) {
@@ -159,8 +190,19 @@
     }
 
     ProcessChatUpdateDTOs(chats) {
+        const self = this;
         for (let chat of chats) {
-            if (this.OpenChat.id != null && chat.id == this.OpenChat.id) {
+            if (chat.isNewChat) {
+                this.Chats.set(chat.newChat.id, chat.newChat);
+                this.ChatListContainer.prepend(this.RenderChat(chat.newChat));
+                $(`[ChatId="${chat.newChat.id}"]`).click((s) => {
+                    self.FetchChatContent(
+                        $(s.currentTarget).attr("ChatId")
+                    );
+                });
+                return;
+            }
+            if (this.OpenChat != null && chat.id == this.OpenChat.id) {
                 for (let message of chat.messages) {
                     let isYou = false;
                     if (message.user != null) {

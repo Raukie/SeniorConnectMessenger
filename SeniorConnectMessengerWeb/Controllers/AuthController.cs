@@ -54,5 +54,12 @@ namespace SeniorConnectMessengerWeb.Controllers
 
             return Json(new AuthenticationResultDTO() { Success = true });
         }
+
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync();
+
+            return new RedirectResult(Url.Content("~/"));
+        }
     }
 }

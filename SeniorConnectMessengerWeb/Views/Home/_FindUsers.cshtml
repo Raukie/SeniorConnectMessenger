@@ -1,5 +1,5 @@
-﻿<div class="SeniorPopup" id="FindUsersPopup" tabindex="1" style="position:absolute;">
-    <input id="FindUserInput" class="ChatInput" tabindex="-1" placeholder="Zoek op naam..."></input>
+﻿<div class="SeniorPopup" id="FindUsersPopup" tabindex="1" style="display:none;position:absolute;">
+    <input autocomplete="off" id="FindUserInput" class="ChatInput" tabindex="-1" placeholder="Zoek op naam..."></input>
     <div id="FoundUserList" class="UserList">
 
     </div>
@@ -45,7 +45,16 @@
         }
     }
 
+    function ClearAllFindUsers() {
+        foundUsers = [];
+        $("#FoundUserList").empty();
+        $("#FindUserInput").val(null)
+    }
+
     function ClickedOnUser(user){
-        
+        console.log(user);
+        if (window.ClickOnUserCallback != null) {
+            window.ClickOnUserCallback(user);
+        }
     }
 </script>

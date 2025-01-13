@@ -11,5 +11,9 @@ namespace Core.Models.DTO
         public int Id { get; set; }
         public bool Removed { get; set; }
         public int AmountOfUnreadMessages { get; set; }
+
+        // only used for completely new chats
+        public bool IsNewChat { get; set; } = false;
+        public ChatDTO? NewChat { get; set; }
     }
 }

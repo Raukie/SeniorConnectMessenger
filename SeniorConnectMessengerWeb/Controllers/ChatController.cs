@@ -5,6 +5,7 @@ using DataAccessLayer.DTO;
 using Infrastructure.DataAccessLayer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using SeniorConnectMessengerWeb.Helpers;
 using SeniorConnectMessengerWeb.Models.DTO;
 using System.Net;
@@ -24,6 +25,43 @@ namespace SeniorConnectMessengerWeb.Controllers
         /// Only used to pass to the domain classes, nothing else!
         /// </summary>
         private IChatStorage _chatRepository = chatRepository ?? throw new ArgumentNullException(nameof(chatRepository));
+
+        public IResult AddUser(int userId, int chatId)
+        {
+            var groupChat = _chatService.GetGroupChat(chatId, userId);
+            int loggedInUserId = _userService.GetCurrentUserId(HttpContext);
+
+            var loggedInUser = _userService.GetUser(loggedInUserId);
+            var user = _userService.GetUser(userId);
+
+            if(groupChat.AddUser(_chatRepository, user!, loggedInUser!))
+            {
+                return Results.Ok();
+            } else
+            {
+                return Results.Problem();
+            }
+        }
+
+        public IResult CreateChat(string chatName, List<int> userIds)
+        {
+            // there are already front end checks for these
+            if(chatName.Length < 5 || chatName.Length > 35 || userIds.Count < 2)
+            {
+                return Results.Problem();
+            }
+
+            int userId = _userService.GetCurrentUserId(HttpContext);
+            var user = _userService.GetUser(userId);
+            
+            if (_chatService.CreateChat(WebUtility.HtmlEncode(chatName), user!, userIds))
+            {
+                return Results.Ok();
+            } else
+            {
+                return Results.Problem();
+            }
+        }
 
         public IResult GetUserChats()
         {
