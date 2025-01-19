@@ -13,6 +13,20 @@ namespace UnitTests.MockDataAccess
     internal class MockChatStorage : IChatStorage
     {
         internal List<ChatDTO> Chats { get; set; } = new();
+
+        public bool AddUserToChat(UserDTO user, int chatId)
+        {
+            var chat = Chats.FirstOrDefault(c => c.Id == chatId);
+            if(chat == null)
+            {
+                return false;
+            }
+
+            chat.Users.Add(user);
+
+            return true;
+        }
+
         public ChatDTO CreateChat(ChatDTO chatDto, UserDTO userCreatedBy, DateTime? overrideDate = null)
         {
             Chats.Add(chatDto);

@@ -15,7 +15,7 @@ namespace UnitTests
             var chatStorage = new MockChatStorage();
             var userStorage = new MockUserStorage();
 
-            var chatService = new ChatService(chatStorage);
+            var chatService = new ChatService(chatStorage, userStorage);
 
             userStorage.CreateUser(new UserDTO("Ryan"), "fontys123");
             userStorage.CreateUser(new UserDTO("Peter"), "fontys123");
@@ -48,7 +48,7 @@ namespace UnitTests
             var chatStorage = new MockChatStorage();
             var userStorage = new MockUserStorage();
 
-            var chatService = new ChatService(chatStorage);
+            var chatService = new ChatService(chatStorage, userStorage);
 
             userStorage.CreateUser(new UserDTO("Ryan"), "fontys123");
             userStorage.CreateUser(new UserDTO("Peter"), "fontys123");
@@ -101,7 +101,7 @@ namespace UnitTests
             var chatStorage = new MockChatStorage();
             var userStorage = new MockUserStorage();
 
-            var chatService = new ChatService(chatStorage);
+            var chatService = new ChatService(chatStorage, userStorage);
 
             userStorage.CreateUser(new UserDTO("Ryan"), "fontys123");
             userStorage.CreateUser(new UserDTO("Peter"), "fontys123");
@@ -147,7 +147,7 @@ namespace UnitTests
             var chatStorage = new MockChatStorage();
             var userStorage = new MockUserStorage();
 
-            var chatService = new ChatService(chatStorage);
+            var chatService = new ChatService(chatStorage, userStorage);
 
             userStorage.CreateUser(new UserDTO("Ryan"), "fontys123");
             userStorage.CreateUser(new UserDTO("Peter") { FirstName = "Peter", LastName = "Denbos" }, "fontys123");

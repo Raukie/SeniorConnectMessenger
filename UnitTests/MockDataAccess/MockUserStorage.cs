@@ -25,6 +25,13 @@ namespace UnitTests.MockDataAccess
             return user;
         }
 
+        public List<UserDTO> FindUser(string searchQuery)
+        {
+            var tokens = searchQuery.Split(' ');
+            List<UserDTO> users = Users.Where(user=> tokens.Any(token=>user.FirstName.Contains(token) || tokens.Any(token => user.LastName.Contains(token)))).ToList();
+            return users;
+        }
+
         public UserDTO? GetUserById(int id)
         {
             return Users.FirstOrDefault(user => user.Id == id);
